@@ -1,0 +1,25 @@
+package ca.tristan.easycommands.commands;
+
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+
+import java.util.List;
+
+public class CommandData {
+
+    Long id;
+    String commandString;
+    net.dv8tion.jda.api.interactions.commands.Command.Type type;
+    String name;
+    String fullName;
+    List<OptionMapping> options;
+
+    public CommandData(Long id, String commandString, Command.Type type, String name, String fullName, List<OptionMapping> options) {
+        this.id = id;
+        this.commandString = commandString;
+        this.type = type;
+        this.name = name;
+        this.fullName = fullName;
+        this.options = options;
+    }
+}

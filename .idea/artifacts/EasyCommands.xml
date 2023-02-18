@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="EasyCommands">
+    <output-path>$PROJECT_DIR$/out/artifacts/EasyCommands</output-path>
+    <root id="archive" name="EasyCommands.jar">
+      <element id="module-output" name="EasyCommands" />
+    </root>
+  </artifact>
+</component>

@@ -32,6 +32,8 @@ public class EventData {
 
     private final Connection connection;
 
+    private final SlashCommandInteractionEvent event;
+
     public EventData(SlashCommandInteractionEvent event) {
         this.channel = event.getChannel();
         this.commandSender = event.getMember();
@@ -50,6 +52,8 @@ public class EventData {
         this.memberVoiceState = this.commandSender != null ? this.commandSender.getVoiceState() : null;
 
         this.connection = EasyCommands.getConnection() != null ? EasyCommands.getConnection() : null;
+
+        this.event = event;
     }
 
     public MessageChannelUnion getChannel() {
@@ -92,11 +96,20 @@ public class EventData {
         return memberVoiceState;
     }
 
-    public ReplyCallbackAction getDeferReply() {
+    public ReplyCallbackAction deferReply() {
         return deferReply;
     }
 
     public InteractionHook getHook() {
         return hook;
     }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public SlashCommandInteractionEvent getEvent() {
+        return event;
+    }
+
 }

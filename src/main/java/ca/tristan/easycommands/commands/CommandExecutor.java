@@ -1,13 +1,14 @@
 package ca.tristan.easycommands.commands;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 import java.util.List;
 
 public abstract class CommandExecutor {
 
     public CommandExecutor() {
-        EasyCommands.jda.upsertCommand(getName(), getDescription()).queue();
     }
 
     public String getName() {
@@ -22,15 +23,11 @@ public abstract class CommandExecutor {
         return null;
     }
 
-    public List<Role> authorizedRoles() {
-        return null;
-    }
-
     public boolean isOwnerOnly() {
         return false;
     }
 
-    public void execute(EventData executor) {
+    public void execute(EventData data) {
 
     }
 

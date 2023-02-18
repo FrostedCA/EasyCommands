@@ -3,8 +3,11 @@ package ca.tristan.easycommands.commands;
 import ca.tristan.easycommands.utils.LogType;
 import ca.tristan.easycommands.utils.Logger;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
@@ -13,6 +16,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class EasyCommands extends ListenerAdapter {
 
@@ -55,6 +59,12 @@ public class EasyCommands extends ListenerAdapter {
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         for (CommandExecutor executor : EasyCommands.executors) {
             if(event.getName().equals(executor.getName())) {
+                if(executor.isOwnerOnly() && !(Objects.requireNonNull(event.getMember())).isOwner()) {
+                    event.deferReply().queue();
+                    event.getHook().setEphemeral(true);
+                    event.getHook().sendMessage("This command can only be used by the server owner.").queue();
+                    break;
+                }
                 executor.execute(new EventData(event));
                 break;
             }
@@ -67,4 +77,16 @@ public class EasyCommands extends ListenerAdapter {
     public void logCurrentExecutors() {
         Logger.log(LogType.OK, jda.retrieveCommands().complete().toString());
     }
+
+    /**
+     * Updates all executors/commands to Discord Server.
+     */
+    public void updateCommands() {
+        List<CommandData> commands = new ArrayList<>();
+        executors.forEach(commandExecutor -> {
+            commands.add(Commands.slash(commandExecutor.getName(), commandExecutor.getDescription()));
+        });
+        jda.updateCommands().addCommands(commands).queue();
+    }
+
 }

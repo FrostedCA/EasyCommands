@@ -22,4 +22,28 @@ public class CommandData {
         this.fullName = fullName;
         this.options = options;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getCommandString() {
+        return commandString;
+    }
+
+    public Command.Type getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public List<OptionMapping> getOptions() {
+        return options;
+    }
 }

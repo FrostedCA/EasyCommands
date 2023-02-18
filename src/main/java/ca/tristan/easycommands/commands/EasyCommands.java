@@ -4,6 +4,7 @@ import ca.tristan.easycommands.utils.LogType;
 import ca.tristan.easycommands.utils.Logger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -79,12 +80,15 @@ public class EasyCommands extends ListenerAdapter {
     }
 
     /**
-     * Updates all executors/commands to Discord Server.
+     * Updates all executors/commands to Discord Guild.
      */
     public void updateCommands() {
         List<CommandData> commands = new ArrayList<>();
         executors.forEach(commandExecutor -> {
-            commands.add(Commands.slash(commandExecutor.getName(), commandExecutor.getDescription()));
+            /*if(!commandExecutor.getOptions().isEmpty()) {
+                commands.add(Commands.slash(commandExecutor.getName(), commandExecutor.getDescription()).addOptions(commandExecutor.getOptions()));
+            }*/
+            commands.add(Commands.slash(commandExecutor.getName(), commandExecutor.getDescription()).addOptions(commandExecutor.getOptions()));
         });
         jda.updateCommands().addCommands(commands).queue();
     }

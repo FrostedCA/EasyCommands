@@ -1,5 +1,7 @@
 package ca.tristan.easycommands.commands;
 
+import ca.tristan.easycommands.utils.LogType;
+import ca.tristan.easycommands.utils.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.awt.*;
@@ -28,8 +30,8 @@ public class HelpCmd extends CommandExecutor {
         builder.setTitle("Help - " + data.getGuild().getName());
         builder.setColor(Color.GREEN);
         EasyCommands.executors.forEach(commandExecutor -> {
-            if(!commandExecutor.isOwnerOnly() && !commandExecutor.getName().equals("help") && (commandExecutor.getHelpMessage() != null || !commandExecutor.getHelpMessage().isEmpty())) {
-                builder.addField("/" + commandExecutor.getName(), commandExecutor.getHelpMessage(), false);
+            if(!commandExecutor.isOwnerOnly() && !commandExecutor.getName().equals("help") && (commandExecutor.getDescription() != null || !commandExecutor.getDescription().isEmpty())) {
+                builder.addField("/" + commandExecutor.getName(), commandExecutor.getDescription(), false);
             }
         });
         if(builder.getFields().isEmpty()) {

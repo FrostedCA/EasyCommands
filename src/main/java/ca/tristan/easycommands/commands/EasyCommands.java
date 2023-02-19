@@ -6,9 +6,12 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
@@ -24,9 +27,11 @@ public class EasyCommands extends ListenerAdapter {
     protected static List<CommandExecutor> executors = new ArrayList<>();
     protected static JDA jda;
     private static Connection connection;
+    private boolean useDevCommands;
 
-    public EasyCommands(JDA jda) {
+    public EasyCommands(JDA jda, boolean useDevCommands) {
         EasyCommands.jda = jda;
+        this.useDevCommands = useDevCommands;
     }
 
     /**
@@ -57,19 +62,49 @@ public class EasyCommands extends ListenerAdapter {
     public void clearExecutors() { EasyCommands.executors.clear(); }
 
     @Override
+    public void onGuildReady(GuildReadyEvent event) {
+        event.getGuild().retrieveCommands().queue(commands -> {
+            for (Command command : commands) {
+                event.getGuild().deleteCommandById(command.getId()).queue();
+            }
+        });
+        event.getGuild().updateCommands().queue();
+    }
+
+    @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         for (CommandExecutor executor : EasyCommands.executors) {
             if(event.getName().equals(executor.getName())) {
                 if(executor.isOwnerOnly() && !(Objects.requireNonNull(event.getMember())).isOwner()) {
-                    event.deferReply().queue();
-                    event.getHook().setEphemeral(true);
-                    event.getHook().sendMessage("This command can only be used by the server owner.").queue();
+                    event.reply("This command can only be used by the server owner.").setEphemeral(true).queue();
                     break;
                 }
                 executor.execute(new EventData(event));
                 break;
             }
         }
+    }
+
+    @Override
+    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+        if(!useDevCommands) {
+            return;
+        }
+
+        if(!Objects.requireNonNull(event.getMember()).isOwner()) {
+            return;
+        }
+
+        String[] args = event.getMessage().getContentRaw().split(" ");
+
+        for (CommandExecutor executor : executors) {
+            if(args[0].equals("!" + executor.getName())) {
+                executor.devExecute(event);
+                event.getMessage().delete().queue();
+                break;
+            }
+        }
+        
     }
 
     /**
@@ -85,10 +120,9 @@ public class EasyCommands extends ListenerAdapter {
     public void updateCommands() {
         List<CommandData> commands = new ArrayList<>();
         executors.forEach(commandExecutor -> {
-            /*if(!commandExecutor.getOptions().isEmpty()) {
+            if(!commandExecutor.isDevOnly()) {
                 commands.add(Commands.slash(commandExecutor.getName(), commandExecutor.getDescription()).addOptions(commandExecutor.getOptions()));
-            }*/
-            commands.add(Commands.slash(commandExecutor.getName(), commandExecutor.getDescription()).addOptions(commandExecutor.getOptions()));
+            }
         });
         jda.updateCommands().addCommands(commands).queue();
     }

@@ -2,6 +2,7 @@ package ca.tristan.easycommands.commands;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
@@ -20,10 +21,6 @@ public abstract class CommandExecutor {
         return null;
     }
 
-    public String getHelpMessage() {
-        return null;
-    }
-
     public boolean isOwnerOnly() {
         return false;
     }
@@ -32,7 +29,18 @@ public abstract class CommandExecutor {
         return options;
     }
 
+    /**
+     * Specifies if the command should be Developer mode only. If true the command won't be registered as a slash command.
+     * The function 'execute(EventData)' will then be ignored, and you should only use 'devExecute(MessageReceivedEvent)'.
+     * Only server owners can use Dev commands. For now.
+     */
+    public boolean isDevOnly() { return false; }
+
     public void execute(EventData data) {
+
+    }
+
+    public void devExecute(MessageReceivedEvent event) {
 
     }
 

@@ -16,7 +16,6 @@ Public library to make slash commands creation for JDA API easier.
         JDA jda = jdaBuilder.build().awaitReady();
 
         easyCommands = new EasyCommands(jda);
-        easyCommands.mysqlConnect("localhost:3306/support", "root", "Test");
 
         easyCommands.addExecutor(new HelpCmd(), new OtherCmdEx(), etc);
         easyCommands.enableMusicBot();

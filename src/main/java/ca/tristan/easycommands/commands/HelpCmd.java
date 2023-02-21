@@ -1,7 +1,5 @@
 package ca.tristan.easycommands.commands;
 
-import ca.tristan.easycommands.utils.LogType;
-import ca.tristan.easycommands.utils.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.awt.*;

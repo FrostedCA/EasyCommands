@@ -1,9 +1,13 @@
 package ca.tristan.easycommands.commands;
 
+import ca.tristan.easycommands.commands.music.NowPlayingCmd;
+import ca.tristan.easycommands.commands.music.PlayCmd;
+import ca.tristan.easycommands.commands.music.SkipCmd;
+import ca.tristan.easycommands.commands.music.StopCmd;
 import ca.tristan.easycommands.utils.LogType;
 import ca.tristan.easycommands.utils.Logger;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -11,7 +15,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
@@ -24,6 +29,8 @@ import java.util.Objects;
 
 public class EasyCommands extends ListenerAdapter {
 
+    public static GatewayIntent[] gatewayIntents = { GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS };
+    public static CacheFlag[] cacheFlags = { CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE };
     protected static List<CommandExecutor> executors = new ArrayList<>();
     protected static JDA jda;
     private static Connection connection;
@@ -125,6 +132,10 @@ public class EasyCommands extends ListenerAdapter {
             }
         });
         jda.updateCommands().addCommands(commands).queue();
+    }
+
+    public void enableMusicBot() {
+        addExecutor(new PlayCmd(), new StopCmd(), new NowPlayingCmd(), new SkipCmd());
     }
 
 }

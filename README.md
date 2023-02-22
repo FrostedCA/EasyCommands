@@ -41,6 +41,7 @@ Latest Release: [GitHub Release](https://github.com/FrostedCA/EasyCommands/relea
 
 Make sure to replace **RELEASE** with the latest available release. Check [JitPack](https://jitpack.io/#FrostedCA/EasyCommands) steps for more information. 
 
+### Maven
 ```pom.xml
 <repositories>
     <repository>

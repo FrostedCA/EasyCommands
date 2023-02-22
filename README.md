@@ -35,6 +35,9 @@ Public library to make slash commands creation for JDA API easier.
 " target="_blank"><img src="http://img.youtube.com/vi/7IUPpeEWM_M/0.jpg" 
 alt="youtube thumbnail" width="480" height="340" /></a>
 
+or check out this simple command class: [NowPlayingCmd.java](https://github.com/FrostedCA/EasyCommands/blob/master/src/main/java/ca/tristan/easycommands/commands/music/NowPlayingCmd.java)
+
+
 ## Download
 [![](https://jitpack.io/v/FrostedCA/EasyCommands.svg)](https://jitpack.io/#FrostedCA/EasyCommands)
 

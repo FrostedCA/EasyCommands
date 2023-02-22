@@ -13,7 +13,7 @@ Public library to make slash commands creation for JDA API easier.
 
         EasyCommands easyCommands = new EasyCommands(jda, false); // If you don't know how to use devCommands you can set it to 'false'
 
-        easyCommands.addExecutor(new HelpCmd(easyCommands), new OtherCmdEx(), etc);
+        easyCommands.addExecutor(new HelpCmd(easyCommands), new OtherCmdEx()); // Replace with your own custom Executors. HelpCmd is provided by default, you can check it out to see how to do your own.
         easyCommands.enableMusicBot();
         easyCommands.registerListeners(
             //Your Listeners in here (ListenerAdpaters)

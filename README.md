@@ -26,7 +26,7 @@ Public library to make slash commands creation for JDA API easier.
 ## Download
 [![](https://jitpack.io/v/FrostedCA/EasyCommands.svg)](https://jitpack.io/#FrostedCA/EasyCommands)
 
-Latest Release: [Releases](https://github.com/FrostedCA/EasyCommands/releases/tag/v0.3.5)
+Latest Release: [GitHub Release](https://github.com/FrostedCA/EasyCommands/releases/tag/v0.3.5)
 ```pom.xml
 <repositories>
     <repository>
@@ -38,7 +38,7 @@ Latest Release: [Releases](https://github.com/FrostedCA/EasyCommands/releases/ta
 ```pom.xml
 <dependency>
     <groupId>com.github.FrostedCA</groupId>
-	<artifactId>EasyCommands</artifactId>
-	<version>v0.3.5</version>
+    <artifactId>EasyCommands</artifactId>
+    <version>v0.3.5</version>
 </dependency>
 ```

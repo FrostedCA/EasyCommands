@@ -1,6 +1,12 @@
 # EasyCommands
 Public library to make slash commands creation for JDA API easier.
 
+## Summary
+
+ - <a href="#example-main-class-setup">Example Main Class</a>
+ - <a href="#commandexecutor">CommandExecutor</a>
+ - <a href="#download">Download</a>
+https://github.com/FrostedCA/EasyCommands#download
 ## Example Main class setup.
 ### For Latest version: 0.4.0
 ```java

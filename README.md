@@ -6,7 +6,7 @@ Public library to make slash commands creation for JDA API easier.
 - <a href="#commandexecutor">CommandExecutor</a>
 - <a href="#download">Download</a>
 ## Example Main class setup.
-#### Latest version: 0.4.1
+#### Latest Version: [GitHub Release](https://github.com/FrostedCA/EasyCommands/releases/latest)
 ```java
     public static void main(String[] args) throws InterruptedException {
 
@@ -52,7 +52,7 @@ Then you will be able to access your token/etc with `config.getToken()` or `conf
 ## Download
 [![](https://jitpack.io/v/FrostedCA/EasyCommands.svg)](https://jitpack.io/#FrostedCA/EasyCommands)
 
-### Latest Version: [GitHub Release](https://github.com/FrostedCA/EasyCommands/releases/tag/v0.4.1)
+#### Latest Version: [GitHub Release](https://github.com/FrostedCA/EasyCommands/releases/latest)
 
 Make sure to replace **VERSION** with the latest available version above! Check [JitPack](https://jitpack.io/#FrostedCA/EasyCommands) for more information. 
 

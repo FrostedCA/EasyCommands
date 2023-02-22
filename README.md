@@ -2,9 +2,11 @@
 Public library to make slash commands creation for JDA API easier.
 
 ## Summary
-- <a href="#example-main-class-setup">Example Main Class</a>
-- <a href="#commandexecutor">CommandExecutor</a>
+- <a href="#example-main-class-setup">Main Class Example</a>
+- <a href="#commandexecutor">Create a command</a>
+- <a href="##config--available-in-version-041">Config File Setup</a>
 - <a href="#download">Download</a>
+
 ## Example Main class setup.
 #### Latest Version: [GitHub Release](https://github.com/FrostedCA/EasyCommands/releases/latest)
 ```java

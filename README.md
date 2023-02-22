@@ -23,7 +23,7 @@ Public library to make slash commands creation for JDA API easier.
         );
     }
 
-#Download
+# Download
 Current latest version: 0.3
 
     <dependency>

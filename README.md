@@ -10,8 +10,7 @@ Public library to make slash commands creation for JDA API easier.
 	
 	JDA jda = easyCommands.addExecutor( // Add your custom commands/executors here!
 		new HelpCmd(easyCommands),
-		new ExampleCmd1(),
-		new ExampleCmd2()...
+		new ExampleCmd1()...
 	).registerListeners( // Add your custom listeners/events here!
 		new ExampleListener1(),
 		new ExampleListener2()...

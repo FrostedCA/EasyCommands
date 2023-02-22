@@ -2,7 +2,7 @@
 Public library to make slash commands creation for JDA API easier.
 
 ## Example Main class setup.
-
+```java
     public static void main(String[] args) throws InterruptedException {
 
         JDABuilder jdaBuilder = JDABuilder.create("---", Arrays.asList(EasyCommands.gatewayIntents));
@@ -17,12 +17,11 @@ Public library to make slash commands creation for JDA API easier.
         easyCommands.enableMusicBot();
         easyCommands.registerListeners(
             //Your Listeners in here (ListenerAdpaters)
-            new Example1(),
-            new Example2(),
-            ...
+            new JoinEventEx(), // **Replace with your own events.**
+            new LeaveEventEx()
         );
     }
-
+```
 ## Download
 [![](https://jitpack.io/v/FrostedCA/EasyCommands.svg)](https://jitpack.io/#FrostedCA/EasyCommands)
 

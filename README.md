@@ -29,7 +29,9 @@ Public library to make slash commands creation for JDA API easier.
 - Extend the class with CommandExecutor. Ex: `public class HelloCmd extends CommandExecutor`
 - You can now override all the necessesary functions. Ex: `getName(), getDescription(), execute(EventData data)`
 - If you still need help you can check out this YouTube video: 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/7IUPpeEWM_M" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=7IUPpeEWM_M
+" target="_blank"><img src="http://img.youtube.com/vi/7IUPpeEWM_M/0.jpg" 
+alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
 
 ## Download
 [![](https://jitpack.io/v/FrostedCA/EasyCommands.svg)](https://jitpack.io/#FrostedCA/EasyCommands)

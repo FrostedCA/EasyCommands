@@ -37,7 +37,7 @@ alt="youtube thumbnail" width="480" height="340" /></a>
 
 or check out this simple command class: [NowPlayingCmd.java](https://github.com/FrostedCA/EasyCommands/blob/master/src/main/java/ca/tristan/easycommands/commands/music/NowPlayingCmd.java)
 
-## Config
+## Config | Available in version 0.4.1
 #### How to use the Config class?
 Config example:
 ```ini

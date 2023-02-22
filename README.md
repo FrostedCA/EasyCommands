@@ -22,3 +22,12 @@ Public library to make slash commands creation for JDA API easier.
             ...
         );
     }
+
+#Download
+Current latest version: 0.3
+
+    <dependency>
+        <groupId>ca.tristan.jdaeasycommands</groupId>
+        <artifactId>jdaeasycommands</artifactId>
+        <version>VERSION</version>
+    </dependency>

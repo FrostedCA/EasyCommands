@@ -37,9 +37,9 @@ alt="youtube thumbnail" width="480" height="340" /></a>
 ## Download
 [![](https://jitpack.io/v/FrostedCA/EasyCommands.svg)](https://jitpack.io/#FrostedCA/EasyCommands)
 
-Latest Release: [GitHub Release](https://github.com/FrostedCA/EasyCommands/releases/tag/v0.4.0)
+### Latest Version: [GitHub Release](https://github.com/FrostedCA/EasyCommands/releases/tag/v0.4.0)
 
-Make sure to replace **RELEASE** with the latest available release. Check [JitPack](https://jitpack.io/#FrostedCA/EasyCommands) steps for more information. 
+Make sure to replace **VERSION** with the latest available version. Check [JitPack](https://jitpack.io/#FrostedCA/EasyCommands) steps for more information. 
 
 ### Maven
 ```pom.xml
@@ -54,6 +54,16 @@ Make sure to replace **RELEASE** with the latest available release. Check [JitPa
 <dependency>
     <groupId>com.github.FrostedCA</groupId>
     <artifactId>EasyCommands</artifactId>
-    <version>RELEASE</version>
+    <version>VERSION</version>
 </dependency>
+```
+### Gradle
+```gradle
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.FrostedCA:EasyCommands:VERSION'
+}
 ```

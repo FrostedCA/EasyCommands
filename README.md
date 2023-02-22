@@ -39,7 +39,7 @@ alt="youtube thumbnail" width="480" height="340" /></a>
 
 ### Latest Version: [GitHub Release](https://github.com/FrostedCA/EasyCommands/releases/tag/v0.4.0)
 
-Make sure to replace **VERSION** with the latest available version. Check [JitPack](https://jitpack.io/#FrostedCA/EasyCommands) steps for more information. 
+Make sure to replace **VERSION** with the latest available version above! Check [JitPack](https://jitpack.io/#FrostedCA/EasyCommands) for more information. 
 
 ### Maven
 ```pom.xml

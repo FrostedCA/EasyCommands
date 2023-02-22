@@ -28,7 +28,7 @@ Public library to make slash commands creation for JDA API easier.
 - Create a new Java class. Ex: HelloCmd.java
 - Extend the class with CommandExecutor. Ex: `public class HelloCmd extends CommandExecutor`
 - You can now override all the necessesary functions. Ex: `getName(), getDescription(), execute(EventData data)`
-- When you are done creating your command class, you can register it inside of your Main class. Ex: `JDA jda = easyCommands.addExecutor(new HelloCmd()).buildJDA;`
+- When you are done creating your command class, you can register it inside of your Main class. Ex: `JDA jda = easyCommands.addExecutor(new HelloCmd()).buildJDA();`
 - If you still need help you can check out this YouTube video:
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=7IUPpeEWM_M

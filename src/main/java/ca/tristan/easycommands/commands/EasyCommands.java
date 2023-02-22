@@ -8,6 +8,7 @@ import ca.tristan.easycommands.events.DevCommands;
 import ca.tristan.easycommands.utils.LogType;
 import ca.tristan.easycommands.utils.Logger;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -29,18 +30,42 @@ public class EasyCommands extends ListenerAdapter {
     protected JDA jda;
     private static Connection connection;
     private List<CommandExecutor> executors = new ArrayList<>();
+    private final boolean useDevCommands;
+    private final boolean useMusicBot;
 
-    public static final GatewayIntent[] gatewayIntents = { GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS };
+    public static GatewayIntent[] gatewayIntents = { GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS };
     public static final CacheFlag[] cacheFlags = { CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE };
+    private final JDABuilder jdaBuilder;
 
-    public EasyCommands(JDA jda, boolean useDevCommands) {
-        this.jda = jda;
-        this.jda.addEventListener(this);
+    public EasyCommands(String token, boolean enableDevCommands, boolean enableMusicBot) {
+        this.useDevCommands = enableDevCommands;
+        this.useMusicBot = enableMusicBot;
+
+        if(!useDevCommands) {
+            gatewayIntents = new GatewayIntent[]{GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS};
+        }
+
+        jdaBuilder = JDABuilder.create(token, Arrays.asList(gatewayIntents));
+        jdaBuilder.enableCache(Arrays.asList(cacheFlags));
+        jdaBuilder.addEventListeners(this);
+    }
+
+    public JDA buildJDA() throws InterruptedException {
+
+        this.jda = jdaBuilder.build().awaitReady();
+
+        if(this.useMusicBot) {
+            enableMusicBot();
+        }
 
         if(useDevCommands) {
             this.jda.addEventListener(new DevCommands(this));
         }
 
+        updateCommands();
+        logCurrentExecutors();
+
+        return jda;
     }
 
     /**
@@ -62,17 +87,20 @@ public class EasyCommands extends ListenerAdapter {
 
     public List<CommandExecutor> getExecutors() { return executors; }
 
-    public void setExecutors(List<CommandExecutor> executors) {
+    public EasyCommands setExecutors(List<CommandExecutor> executors) {
         this.executors = executors;
-        updateCommands();
+        return this;
     }
 
-    public void addExecutor(CommandExecutor... executors) {
+    public EasyCommands addExecutor(CommandExecutor... executors) {
         this.executors.addAll(List.of(executors));
-        updateCommands();
+        return this;
     }
 
-    public void clearExecutors() { this.executors.clear(); }
+    public EasyCommands clearExecutors() {
+        this.executors.clear();
+        return this;
+    }
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
@@ -98,7 +126,7 @@ public class EasyCommands extends ListenerAdapter {
     /**
      * Updates all executors/commands to Discord Guild.
      */
-    private void updateCommands() {
+    public void updateCommands() {
         List<CommandData> commands = new ArrayList<>();
         executors.forEach(commandExecutor -> {
             if(!commandExecutor.isDevOnly()) {
@@ -106,19 +134,20 @@ public class EasyCommands extends ListenerAdapter {
             }
         });
         jda.updateCommands().addCommands(commands).queue();
-        logCurrentExecutors();
     }
 
-    public void registerListeners(@NotNull ListenerAdapter... listeners) {
+    public EasyCommands registerListeners(ListenerAdapter... listeners) {
         for (Object listener : listeners) {
-            jda.addEventListener(listener);
+            jdaBuilder.addEventListeners(listener);
         }
 
         Logger.log(LogType.OK, List.of(listeners).toString());
+        return this;
     }
 
     public void enableMusicBot() {
-        addExecutor(new PlayCmd(), new StopCmd(), new NowPlayingCmd(), new SkipCmd());
+        this.executors.addAll(List.of(new PlayCmd(), new StopCmd(), new NowPlayingCmd(), new SkipCmd()));
+        Logger.log(LogType.OK, "Music bot enabled.");
     }
 
 }

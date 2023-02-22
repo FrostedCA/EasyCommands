@@ -6,7 +6,9 @@
 
     <groupId>ca.tristan.easycommands</groupId>
     <artifactId>EasyCommands</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.3</version>
+    <packaging>jar</packaging>
+    <name>EasyCommands</name>
 
     <properties>
         <maven.compiler.source>19</maven.compiler.source>
@@ -16,8 +18,8 @@
 
     <distributionManagement>
         <repository>
-            <id>ca.tristan.easycommands</id>
-            <name>EasyCommands</name>
+            <id>github</id>
+            <name>GitHub FrostedCA Apache Maven Packages</name>
             <url>https://maven.pkg.github.com/FrostedCA/EasyCommands</url>
         </repository>
     </distributionManagement>
@@ -34,7 +36,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.3</version>
+            <version>5.0.0-beta.4</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>

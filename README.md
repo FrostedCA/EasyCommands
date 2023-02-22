@@ -11,7 +11,7 @@ Public library to make slash commands creation for JDA API easier.
 
         JDA jda = jdaBuilder.build().awaitReady();
 
-        EasyCommands easyCommands = new EasyCommands(jda, useDevCommands?); // If you don't know how to use devCommands you can set it to 'false'
+        EasyCommands easyCommands = new EasyCommands(jda, false); // If you don't know how to use devCommands you can set it to 'false'
 
         easyCommands.addExecutor(new HelpCmd(easyCommands), new OtherCmdEx(), etc);
         easyCommands.enableMusicBot();

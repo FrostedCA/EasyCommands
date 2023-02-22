@@ -4,15 +4,12 @@ import ca.tristan.easycommands.commands.music.NowPlayingCmd;
 import ca.tristan.easycommands.commands.music.PlayCmd;
 import ca.tristan.easycommands.commands.music.SkipCmd;
 import ca.tristan.easycommands.commands.music.StopCmd;
+import ca.tristan.easycommands.events.DevCommands;
 import ca.tristan.easycommands.utils.LogType;
 import ca.tristan.easycommands.utils.Logger;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -29,16 +26,21 @@ import java.util.Objects;
 
 public class EasyCommands extends ListenerAdapter {
 
-    public static GatewayIntent[] gatewayIntents = { GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS };
-    public static CacheFlag[] cacheFlags = { CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE };
-    protected static List<CommandExecutor> executors = new ArrayList<>();
-    protected static JDA jda;
+    protected JDA jda;
     private static Connection connection;
-    private boolean useDevCommands;
+    private List<CommandExecutor> executors = new ArrayList<>();
+
+    public static final GatewayIntent[] gatewayIntents = { GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS };
+    public static final CacheFlag[] cacheFlags = { CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE };
 
     public EasyCommands(JDA jda, boolean useDevCommands) {
-        EasyCommands.jda = jda;
-        this.useDevCommands = useDevCommands;
+        this.jda = jda;
+        this.jda.addEventListener(this);
+
+        if(useDevCommands) {
+            this.jda.addEventListener(new DevCommands(this));
+        }
+
     }
 
     /**
@@ -60,27 +62,21 @@ public class EasyCommands extends ListenerAdapter {
 
     public List<CommandExecutor> getExecutors() { return executors; }
 
-    public void setExecutors(List<CommandExecutor> executors) { EasyCommands.executors = executors; }
-
-    public void addExecutor(CommandExecutor... executors) { EasyCommands.executors.addAll(List.of(executors)); }
-
-    public void addExecutor(CommandExecutor executor) { EasyCommands.executors.add(executor); }
-
-    public void clearExecutors() { EasyCommands.executors.clear(); }
-
-    @Override
-    public void onGuildReady(GuildReadyEvent event) {
-        event.getGuild().retrieveCommands().queue(commands -> {
-            for (Command command : commands) {
-                event.getGuild().deleteCommandById(command.getId()).queue();
-            }
-        });
-        event.getGuild().updateCommands().queue();
+    public void setExecutors(List<CommandExecutor> executors) {
+        this.executors = executors;
+        updateCommands();
     }
+
+    public void addExecutor(CommandExecutor... executors) {
+        this.executors.addAll(List.of(executors));
+        updateCommands();
+    }
+
+    public void clearExecutors() { this.executors.clear(); }
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        for (CommandExecutor executor : EasyCommands.executors) {
+        for (CommandExecutor executor : this.executors) {
             if(event.getName().equals(executor.getName())) {
                 if(executor.isOwnerOnly() && !(Objects.requireNonNull(event.getMember())).isOwner()) {
                     event.reply("This command can only be used by the server owner.").setEphemeral(true).queue();
@@ -92,39 +88,17 @@ public class EasyCommands extends ListenerAdapter {
         }
     }
 
-    @Override
-    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-        if(!useDevCommands) {
-            return;
-        }
-
-        if(!Objects.requireNonNull(event.getMember()).isOwner()) {
-            return;
-        }
-
-        String[] args = event.getMessage().getContentRaw().split(" ");
-
-        for (CommandExecutor executor : executors) {
-            if(args[0].equals("!" + executor.getName())) {
-                executor.devExecute(event);
-                event.getMessage().delete().queue();
-                break;
-            }
-        }
-        
-    }
-
     /**
      * Used to debug executors. Serve to identify if the commands are registered to Discord correctly.
      */
-    public void logCurrentExecutors() {
+    private void logCurrentExecutors() {
         Logger.log(LogType.OK, jda.retrieveCommands().complete().toString());
     }
 
     /**
      * Updates all executors/commands to Discord Guild.
      */
-    public void updateCommands() {
+    private void updateCommands() {
         List<CommandData> commands = new ArrayList<>();
         executors.forEach(commandExecutor -> {
             if(!commandExecutor.isDevOnly()) {
@@ -132,6 +106,15 @@ public class EasyCommands extends ListenerAdapter {
             }
         });
         jda.updateCommands().addCommands(commands).queue();
+        logCurrentExecutors();
+    }
+
+    public void registerListeners(@NotNull ListenerAdapter... listeners) {
+        for (Object listener : listeners) {
+            jda.addEventListener(listener);
+        }
+
+        Logger.log(LogType.OK, List.of(listeners).toString());
     }
 
     public void enableMusicBot() {

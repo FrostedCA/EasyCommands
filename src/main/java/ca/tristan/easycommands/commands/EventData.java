@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
@@ -27,7 +28,6 @@ public class EventData {
     private final GuildVoiceState selfVoiceState;
     private final GuildVoiceState memberVoiceState;
 
-    private final ReplyCallbackAction deferReply;
     private final InteractionHook hook;
 
     private final Connection connection;
@@ -41,7 +41,6 @@ public class EventData {
         this.jda = event.getJDA();
         this.command = new CommandData(event.getCommandIdLong(), event.getCommandString(), event.getCommandType(), event.getName(), event.getFullCommandName(), event.getOptions());
 
-        this.deferReply = event.deferReply();
         this.hook = event.getHook();
 
         this.guildMessageChannel = this.channel.asGuildMessageChannel();
@@ -96,8 +95,16 @@ public class EventData {
         return memberVoiceState;
     }
 
-    public ReplyCallbackAction deferReply() {
-        return deferReply;
+    public void deferReply() {
+        event.deferReply().queue();
+    }
+
+    public ReplyCallbackAction reply(String content, boolean ephemeral) {
+        return event.reply(content).setEphemeral(ephemeral);
+    }
+
+    public ReplyCallbackAction reply(MessageEmbed embed, boolean ephemeral) {
+        return event.replyEmbeds(embed).setEphemeral(ephemeral);
     }
 
     public InteractionHook getHook() {

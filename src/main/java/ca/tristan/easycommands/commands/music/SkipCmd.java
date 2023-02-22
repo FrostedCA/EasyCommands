@@ -25,7 +25,7 @@ public class SkipCmd extends CommandExecutor {
         final Member self = data.getSelfMember();
         final GuildVoiceState selfVoiceState = self.getVoiceState();
 
-        data.deferReply().queue();
+        data.deferReply();
 
         if(selfVoiceState == null || !selfVoiceState.inAudioChannel()){
             data.getHook().sendMessage("I need to be in a voice channel for this to work.").queue();

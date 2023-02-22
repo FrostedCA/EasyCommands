@@ -42,7 +42,7 @@ public class PlayerManager {
 
     public void loadAndPlay(TextChannel textChannel, EventData data, String trackUrl){
         final GuildMusicManager musicManager = this.getMusicManager(textChannel.getGuild());
-        data.deferReply().queue();
+        data.deferReply();
         this.audioPlayerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack audioTrack) {
@@ -54,7 +54,7 @@ public class PlayerManager {
                 builder.addField("Music:", audioTrack.getInfo().title, false);
                 builder.addField("Author:", audioTrack.getInfo().author, false);
                 builder.addField("Added by:", data.getCommandSender().getAsMention(), false);
-                builder.setFooter("This music bot was made with EasyCommands.", data.getGuild().getIconUrl());
+                builder.setFooter("This music bot was made with EasyCommands.", "https://raw.githubusercontent.com/FrostedCA/EasyCommands/master/LEAFSTACKv2.png");
                 builder.setColor(new Color(95, 86, 188));
 
                 data.getEvent().getHook().sendMessageEmbeds(builder.build()).queue();
@@ -71,7 +71,7 @@ public class PlayerManager {
                     builder.addField("Music:", tracks.get(0).getInfo().title, false);
                     builder.addField("Author:", tracks.get(0).getInfo().author, false);
                     builder.addField("Added by:", data.getCommandSender().getAsMention(), false);
-                    builder.setFooter("This music bot was made with EasyCommands.", data.getGuild().getIconUrl());
+                    builder.setFooter("This music bot was made with EasyCommands.", "https://raw.githubusercontent.com/FrostedCA/EasyCommands/master/LEAFSTACKv2.png");
                     builder.setColor(new Color(95, 86, 188));
 
                     data.getEvent().getHook().sendMessageEmbeds(builder.build()).queue();

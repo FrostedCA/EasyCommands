@@ -20,14 +20,14 @@ public class StopCmd extends CommandExecutor {
 
     @Override
     public void execute(EventData data) {
-        data.deferReply().queue();
+        data.deferReply();
         if(!data.getMemberVoiceState().inAudioChannel()){
-            data.getHook().sendMessage("You need to be in a voice channel for this command to work.").queue();
+            data.reply("You need to be in a voice channel for this command to work.", true).queue();
             return;
         }
 
         if(!data.getSelfVoiceState().inAudioChannel()){
-            data.getHook().sendMessage("I need to be in a voice channel or I need to be playing music for this command to work.").queue();
+            data.reply("I need to be in a voice channel or I need to be playing music for this command to work.", true).queue();
             return;
         }
 

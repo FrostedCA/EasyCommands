@@ -4,7 +4,7 @@ Public library to make slash commands creation for JDA API easier.
 ## Summary
 - <a href="#example-main-class-setup">Main Class Example</a>
 - <a href="#commandexecutor">Create a command</a>
-- <a href="##config--available-in-version-041">Config File Setup</a>
+- <a href="#config--available-in-version-041">Config File Setup</a>
 - <a href="#download">Download</a>
 
 ## Example Main class setup.

@@ -1,7 +1,8 @@
 # EasyCommands
 Public library to make slash commands creation for JDA API easier.
 
-## Example Main class setup. *For Latest version: 0.3.5*
+## Example Main class setup.
+### For Latest version: 0.3.5
 ```java
     public static void main(String[] args) throws InterruptedException {
 

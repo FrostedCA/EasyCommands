@@ -50,7 +50,7 @@ To access those parameters inside of your code you need to instantiate a new Con
 Then you will be able to access your token/etc with `config.getToken()` or `config.getDB_URL()` etc.
 
 ## Download
-[![](https://jitpack.io/v/FrostedCA/EasyCommands.svg)](https://jitpack.io/#FrostedCA/EasyCommands)
+[![Version](https://jitpack.io/v/FrostedCA/EasyCommands.svg)](https://jitpack.io/#FrostedCA/EasyCommands)
 
 #### Latest Version: [GitHub Release](https://github.com/FrostedCA/EasyCommands/releases/latest)
 

@@ -24,7 +24,7 @@ Public library to make slash commands creation for JDA API easier.
 ```
 
 ## CommandExecutor
-### How to create a custom command with EasyCommands
+#### How to create a custom command with EasyCommands
 - Create a new Java class. Ex: HelloCmd.java
 - Extend the class with CommandExecutor. Ex: `public class HelloCmd extends CommandExecutor`
 - You can now override all the necessesary functions. Ex: `getName(), getDescription(), execute(EventData data)`

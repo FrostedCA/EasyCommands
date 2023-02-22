@@ -49,8 +49,7 @@ Make sure to replace **VERSION** with the latest available version. Check [JitPa
 	<url>https://jitpack.io</url>
     </repository>
 </repositories>
-```
-```pom.xml
+
 <dependency>
     <groupId>com.github.FrostedCA</groupId>
     <artifactId>EasyCommands</artifactId>

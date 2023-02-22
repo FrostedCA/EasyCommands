@@ -6,7 +6,7 @@ Public library to make slash commands creation for JDA API easier.
 - <a href="#commandexecutor">CommandExecutor</a>
 - <a href="#download">Download</a>
 ## Example Main class setup.
-### For Latest version: 0.4.0
+#### Latest version: 0.4.1
 ```java
     public static void main(String[] args) throws InterruptedException {
 
@@ -37,11 +37,22 @@ alt="youtube thumbnail" width="480" height="340" /></a>
 
 or check out this simple command class: [NowPlayingCmd.java](https://github.com/FrostedCA/EasyCommands/blob/master/src/main/java/ca/tristan/easycommands/commands/music/NowPlayingCmd.java)
 
+## Config
+#### How to use the Config class?
+Config example:
+```ini
+token=token
+db_url=localhost:3306/example | This is an example URL
+db_username=username
+db_password=password
+```
+To access those parameters inside of your code you need to instantiate a new Config variable. Ex: `Config config = new Config();`
+Then you will be able to access your token/etc with `config.getToken()` or `config.getDB_URL()` etc.
 
 ## Download
 [![](https://jitpack.io/v/FrostedCA/EasyCommands.svg)](https://jitpack.io/#FrostedCA/EasyCommands)
 
-### Latest Version: [GitHub Release](https://github.com/FrostedCA/EasyCommands/releases/tag/v0.4.0)
+### Latest Version: [GitHub Release](https://github.com/FrostedCA/EasyCommands/releases/tag/v0.4.1)
 
 Make sure to replace **VERSION** with the latest available version above! Check [JitPack](https://jitpack.io/#FrostedCA/EasyCommands) for more information. 
 

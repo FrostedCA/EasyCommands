@@ -1,5 +1,6 @@
 # EasyCommands
 Public library to make slash commands creation for JDA API easier.
+#### Join the [Discord](https://discord.com/invite/2rfSEGNgrv) server for support.
 
 ## Summary
 - <a href="#example-main-class-setup">Main Class Example</a>

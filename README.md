@@ -50,6 +50,22 @@ db_password=password
 ```
 To access those parameters inside of your code you need to instantiate a new Config variable. Ex: `Config config = new Config();`
 Then you will be able to access your token/etc with `config.getToken()` or `config.getDB_URL()` etc.
+#### Main class with Config
+```java
+    public static void main(String[] args) throws InterruptedException, IOException {
+	Config config = new Config();
+       	EasyCommands easyCommands = new EasyCommands(config.getToken(), enableDevCommands?, enableMusicBot?); // If you don't know how to use devCommands leave it to false.
+	
+	JDA jda = easyCommands.addExecutor( // Add your custom commands/executors here!
+		new HelpCmd(easyCommands),
+		new ExampleCmd1()...
+	).registerListeners( // Add your custom listeners/events here!
+		new ExampleListener1(),
+		new ExampleListener2()...
+	).buildJDA(); // Starts the bot!
+	
+    }
+```
 
 ## Download
 [![Version](https://jitpack.io/v/FrostedCA/EasyCommands.svg)](https://jitpack.io/#FrostedCA/EasyCommands)

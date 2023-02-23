@@ -6,6 +6,7 @@ Public library to make slash commands creation for JDA API easier.
 - <a href="#example-main-class-setup">Main Class Example</a>
 - <a href="#commandexecutor">Create a command</a>
 - <a href="#config--available-in-version-041">Config File Setup</a>
+- <a href="#mysql-database">MySQL Database</a>
 - <a href="#download">Download</a>
 
 ## Example Main class setup.
@@ -67,6 +68,12 @@ Then you will be able to access your token/etc with `config.getToken()` or `conf
 	
     }
 ```
+
+## MySQL Database
+#### How to use a MySQL database with the library.
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=3O5csTk7QnI
+" target="_blank"><img src="http://img.youtube.com/vi/7IUPpeEWM_M/0.jpg" 
+alt="youtube thumbnail" width="480" height="340" /></a>
 
 ## Download
 [![Version](https://jitpack.io/v/FrostedCA/EasyCommands.svg)](https://jitpack.io/#FrostedCA/EasyCommands)

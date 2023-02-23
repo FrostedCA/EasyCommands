@@ -72,7 +72,7 @@ Then you will be able to access your token/etc with `config.getToken()` or `conf
 ## MySQL Database
 #### How to use a MySQL database with the library.
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=3O5csTk7QnI
-" target="_blank"><img src="http://img.youtube.com/vi/7IUPpeEWM_M/0.jpg" 
+" target="_blank"><img src="http://img.youtube.com/vi/3O5csTk7QnI/0.jpg" 
 alt="youtube thumbnail" width="480" height="340" /></a>
 
 ## Download

@@ -46,7 +46,7 @@ or check out this simple command class: [NowPlayingCmd.java](https://github.com/
 Config example:
 ```ini
 token=token
-db_url=localhost:3306/example | This is an example URL
+db_url=localhost:3306/example
 db_username=username
 db_password=password
 ```

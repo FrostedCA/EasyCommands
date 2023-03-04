@@ -24,13 +24,11 @@ public class DevCommands extends ListenerAdapter {
         }
 
         String[] args = event.getMessage().getContentRaw().split(" ");
-
-        for (CommandExecutor executor : easyCommands.getExecutors()) {
-            if(args[0].equals("!" + executor.getName())) {
-                executor.devExecute(event);
-                event.getMessage().delete().queue();
-                break;
-            }
+        String cmdName = args[0].replace("!", "");
+        if(easyCommands.getExecutors().containsKey(cmdName)) {
+            CommandExecutor executor = easyCommands.getExecutors().get(cmdName);
+            executor.devExecute(event);
+            event.getMessage().delete().queue();
         }
     }
 

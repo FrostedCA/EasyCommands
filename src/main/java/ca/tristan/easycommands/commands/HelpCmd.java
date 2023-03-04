@@ -32,7 +32,7 @@ public class HelpCmd extends CommandExecutor {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle("Help - " + data.getGuild().getName());
         builder.setColor(Color.GREEN);
-        easyCommands.getExecutors().forEach(commandExecutor -> {
+        easyCommands.getExecutors().forEach((name, commandExecutor) -> {
             if(!commandExecutor.isOwnerOnly() && !commandExecutor.getName().equals("help") && (commandExecutor.getDescription() != null || !commandExecutor.getDescription().isEmpty())) {
                 builder.addField("/" + commandExecutor.getName(), commandExecutor.getDescription(), false);
             }

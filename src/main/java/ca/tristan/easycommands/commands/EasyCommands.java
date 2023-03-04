@@ -20,16 +20,13 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class EasyCommands extends ListenerAdapter {
 
     protected JDA jda;
     private static Connection connection;
-    private List<CommandExecutor> executors = new ArrayList<>();
+    private Map<String, CommandExecutor> executorMap = new HashMap<>();
     private final boolean useDevCommands;
     private final boolean useMusicBot;
 
@@ -85,34 +82,36 @@ public class EasyCommands extends ListenerAdapter {
 
     public static Connection getConnection() { return connection; }
 
-    public List<CommandExecutor> getExecutors() { return executors; }
+    public Map<String, CommandExecutor> getExecutors() { return executorMap; }
 
-    public EasyCommands setExecutors(List<CommandExecutor> executors) {
-        this.executors = executors;
+    public EasyCommands setExecutors(Map<String, CommandExecutor> executors) {
+        this.executorMap = executors;
         return this;
     }
 
     public EasyCommands addExecutor(CommandExecutor... executors) {
-        this.executors.addAll(List.of(executors));
+        for (CommandExecutor executor : executors) {
+            this.executorMap.put(executor.getName(), executor);
+        }
         return this;
     }
 
     public EasyCommands clearExecutors() {
-        this.executors.clear();
+        this.executorMap.clear();
         return this;
     }
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        for (CommandExecutor executor : this.executors) {
-            if(event.getName().equals(executor.getName())) {
-                if(executor.isOwnerOnly() && !(Objects.requireNonNull(event.getMember())).isOwner()) {
-                    event.reply("This command can only be used by the server owner.").setEphemeral(true).queue();
-                    break;
-                }
-                executor.execute(new EventData(event));
-                break;
+
+        if(executorMap.containsKey(event.getName())) {
+            CommandExecutor executor = executorMap.get(event.getName());
+
+            if(executor.isOwnerOnly() && ! (Objects.requireNonNull(event.getMember())).isOwner()) {
+                event.reply("This command can only be used by the server owner.").setEphemeral(true).queue();
+                return;
             }
+            executor.execute(new EventData(event));
         }
     }
 
@@ -128,9 +127,9 @@ public class EasyCommands extends ListenerAdapter {
      */
     public void updateCommands() {
         List<CommandData> commands = new ArrayList<>();
-        executors.forEach(commandExecutor -> {
-            if(!commandExecutor.isDevOnly()) {
-                commands.add(Commands.slash(commandExecutor.getName(), commandExecutor.getDescription()).addOptions(commandExecutor.getOptions()));
+        executorMap.forEach((name, executor) -> {
+            if(!executor.isDevOnly()) {
+                commands.add(Commands.slash(executor.getName(), executor.getDescription()).addOptions(executor.getOptions()));
             }
         });
         jda.updateCommands().addCommands(commands).queue();
@@ -146,7 +145,7 @@ public class EasyCommands extends ListenerAdapter {
     }
 
     public void enableMusicBot() {
-        this.executors.addAll(List.of(new PlayCmd(), new StopCmd(), new NowPlayingCmd(), new SkipCmd()));
+        this.addExecutor(new PlayCmd(), new StopCmd(), new NowPlayingCmd(), new SkipCmd());
         Logger.log(LogType.OK, "Music bot enabled.");
     }
 

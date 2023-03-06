@@ -1,5 +1,6 @@
 package ca.tristan.easycommands.commands;
 
+import ca.tristan.easycommands.commands.prefix.PrefixExecutor;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.awt.*;
@@ -32,9 +33,16 @@ public class HelpCmd extends CommandExecutor {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle("Help - " + data.getGuild().getName());
         builder.setColor(Color.GREEN);
+        builder.addField("Slash Commands", "--------------------", false);
         easyCommands.getExecutors().forEach((name, commandExecutor) -> {
-            if(!commandExecutor.isOwnerOnly() && !commandExecutor.getName().equals("help") && (commandExecutor.getDescription() != null || !commandExecutor.getDescription().isEmpty())) {
+            if(commandExecutor instanceof CommandExecutor && !commandExecutor.isOwnerOnly() && !commandExecutor.getName().equals("help") && (commandExecutor.getDescription() != null || !commandExecutor.getDescription().isEmpty())) {
                 builder.addField("/" + commandExecutor.getName(), commandExecutor.getDescription(), false);
+            }
+        });
+        builder.addField("Prefix Commands", "--------------------", false);
+        easyCommands.getExecutors().forEach((name, commandExecutor) -> {
+            if(commandExecutor instanceof PrefixExecutor && !commandExecutor.isOwnerOnly() && !commandExecutor.getName().equals("help") && (commandExecutor.getDescription() != null || !commandExecutor.getDescription().isEmpty())) {
+                builder.addField(easyCommands.getPrefixCommands().getPrefix() + commandExecutor.getName(), commandExecutor.getDescription(), false);
             }
         });
         if(builder.getFields().isEmpty()) {

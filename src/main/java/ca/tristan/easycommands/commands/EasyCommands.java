@@ -4,11 +4,13 @@ import ca.tristan.easycommands.commands.music.NowPlayingCmd;
 import ca.tristan.easycommands.commands.music.PlayCmd;
 import ca.tristan.easycommands.commands.music.SkipCmd;
 import ca.tristan.easycommands.commands.music.StopCmd;
-import ca.tristan.easycommands.events.DevCommands;
+import ca.tristan.easycommands.commands.prefix.PrefixCommands;
+import ca.tristan.easycommands.commands.prefix.PrefixExecutor;
 import ca.tristan.easycommands.utils.LogType;
 import ca.tristan.easycommands.utils.Logger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -24,26 +26,35 @@ import java.util.*;
 
 public class EasyCommands extends ListenerAdapter {
 
-    protected JDA jda;
-    private static Connection connection;
-    private Map<String, CommandExecutor> executorMap = new HashMap<>();
-    private final boolean useDevCommands;
-    private final boolean useMusicBot;
+    public JDA jda;
 
-    public static GatewayIntent[] gatewayIntents = { GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS };
-    public static final CacheFlag[] cacheFlags = { CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE };
+    private final boolean usePrefixCommands;
+    private final boolean useMusicBot;
     private final JDABuilder jdaBuilder;
 
-    public EasyCommands(String token, boolean enableDevCommands, boolean enableMusicBot) {
-        this.useDevCommands = enableDevCommands;
+    private static Connection connection;
+    private Map<String, IECCommand> executorMap = new HashMap<>();
+
+    private List<GatewayIntent> gatewayIntents = new ArrayList<>();
+    private List<CacheFlag> enabledCacheFlags = new ArrayList<>();
+    private List<CacheFlag> disabledCacheFlags = new ArrayList<>();
+
+    private PrefixCommands prefixCommands;
+
+    public EasyCommands(String token, boolean enablePrefixCommands, boolean enableMusicBot) {
+        this.usePrefixCommands = enablePrefixCommands;
         this.useMusicBot = enableMusicBot;
 
-        if(!useDevCommands) {
-            gatewayIntents = new GatewayIntent[]{GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS};
+        loadIntents();
+
+        if(usePrefixCommands) {
+            this.prefixCommands = new PrefixCommands(this);
+            getGatewayIntents().add(GatewayIntent.MESSAGE_CONTENT);
         }
 
-        jdaBuilder = JDABuilder.create(token, Arrays.asList(gatewayIntents));
-        jdaBuilder.enableCache(Arrays.asList(cacheFlags));
+        jdaBuilder = JDABuilder.create(token, gatewayIntents);
+        jdaBuilder.enableCache(enabledCacheFlags);
+        jdaBuilder.disableCache(disabledCacheFlags);
         jdaBuilder.addEventListeners(this);
     }
 
@@ -55,14 +66,38 @@ public class EasyCommands extends ListenerAdapter {
             enableMusicBot();
         }
 
-        if(useDevCommands) {
-            this.jda.addEventListener(new DevCommands(this));
+        if(usePrefixCommands) {
+            this.jda.addEventListener(prefixCommands);
         }
 
         updateCommands();
         logCurrentExecutors();
 
         return jda;
+    }
+
+    private void loadIntents() {
+        gatewayIntents.addAll(List.of(GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS));
+    }
+
+    private void loadCacheFlags() {
+        enabledCacheFlags.addAll(List.of(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE));
+    }
+
+    public List<GatewayIntent> getGatewayIntents() {
+        return gatewayIntents;
+    }
+
+    public List<CacheFlag> getEnabledCacheFlags() {
+        return enabledCacheFlags;
+    }
+
+    public List<CacheFlag> getDisabledCacheFlags() {
+        return disabledCacheFlags;
+    }
+
+    public PrefixCommands getPrefixCommands() {
+        return prefixCommands;
     }
 
     /**
@@ -82,15 +117,15 @@ public class EasyCommands extends ListenerAdapter {
 
     public static Connection getConnection() { return connection; }
 
-    public Map<String, CommandExecutor> getExecutors() { return executorMap; }
+    public Map<String, IECCommand> getExecutors() { return executorMap; }
 
-    public EasyCommands setExecutors(Map<String, CommandExecutor> executors) {
+    public EasyCommands setExecutors(Map<String, IECCommand> executors) {
         this.executorMap = executors;
         return this;
     }
 
-    public EasyCommands addExecutor(CommandExecutor... executors) {
-        for (CommandExecutor executor : executors) {
+    public EasyCommands addExecutor(IECCommand... executors) {
+        for (IECCommand executor : executors) {
             this.executorMap.put(executor.getName(), executor);
         }
         return this;
@@ -103,14 +138,27 @@ public class EasyCommands extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-
-        if(executorMap.containsKey(event.getName())) {
-            CommandExecutor executor = executorMap.get(event.getName());
-
+        if(getExecutors().containsKey(event.getName()) && getExecutors().get(event.getName()) instanceof CommandExecutor executor) {
             if(executor.isOwnerOnly() && ! (Objects.requireNonNull(event.getMember())).isOwner()) {
                 event.reply("This command can only be used by the server owner.").setEphemeral(true).queue();
                 return;
             }
+
+            if(!executor.getAuthorizedChannels(jda).isEmpty() && !executor.getAuthorizedChannels(jda).contains(event.getChannel())) {
+                event.reply("This command cannot be used in this channel.").setEphemeral(true).queue();
+                return;
+            }
+
+            if(executor.getAuthorizedRoles(jda) != null && !executor.getAuthorizedRoles(jda).isEmpty()) {
+                for (Role authorizedRole : executor.getAuthorizedRoles(jda)) {
+                    if(Objects.requireNonNull(event.getMember()).getRoles().contains(authorizedRole)) {
+                        executor.execute(new EventData(event));
+                        break;
+                    }
+                }
+                return;
+            }
+
             executor.execute(new EventData(event));
         }
     }
@@ -127,15 +175,21 @@ public class EasyCommands extends ListenerAdapter {
      */
     public void updateCommands() {
         List<CommandData> commands = new ArrayList<>();
-        executorMap.forEach((name, executor) -> {
-            if(!executor.isDevOnly()) {
-                commands.add(Commands.slash(executor.getName(), executor.getDescription()).addOptions(executor.getOptions()));
+        getExecutors().forEach((name, executor) -> {
+            if(executor instanceof CommandExecutor executor1) {
+                commands.add(Commands.slash(executor1.getName(), executor1.getDescription()).addOptions(executor1.getOptions()));
             }
         });
         jda.updateCommands().addCommands(commands).queue();
     }
 
     public EasyCommands registerListeners(ListenerAdapter... listeners) {
+
+        if(List.of(listeners).isEmpty()) {
+            Logger.log(LogType.WARNING, "No listener are registered. Ignore this message if you're not supposed to have any.");
+            return this;
+        }
+
         for (Object listener : listeners) {
             jdaBuilder.addEventListeners(listener);
         }

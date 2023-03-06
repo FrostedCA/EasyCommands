@@ -1,5 +1,5 @@
 # EasyCommands
-Public library to make slash commands creation for JDA API easier.
+Public library to make slash & prefix commands creation for JDA API easier.
 #### *Contains a Music Bot*
 #### Join the [Discord](https://discord.com/invite/2rfSEGNgrv) server for support.
 ### If you want to bring any changes to the library you can create a fork of this branch, contact me on Discord if I don't see your fork right aways, give good explanation of your changes and they might get added to this official branch.

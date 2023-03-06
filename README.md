@@ -6,7 +6,8 @@ Public library to make slash commands creation for JDA API easier.
 
 ## Summary
 - <a href="#example-main-class-setup">Main Class Example</a>
-- <a href="#commandexecutor">Create a command</a>
+- <a href="#commandexecutor">Create a slash command</a>
+- <a href="#prefixexecutor">Create a prefix command</a>
 - <a href="#config--available-in-version-041">Config File Setup</a>
 - <a href="#mysql-database">MySQL Database</a>
 - <a href="#download">Download</a>
@@ -16,7 +17,12 @@ Public library to make slash commands creation for JDA API easier.
 ```java
     public static void main(String[] args) throws InterruptedException {
 
-       	EasyCommands easyCommands = new EasyCommands("token", enableDevCommands?, enableMusicBot?); // If you don't know how to use devCommands leave it to false.
+       	EasyCommands easyCommands = new EasyCommands("token", enablePrefixCommands?, enableMusicBot?); // If you don't know how to use devCommands leave it to false.
+	
+	easyCommands.getPrefixCommands().setPrefix("prefix"); // Only if you want to change the default prefix from '!'
+	
+	easyCommands.getEnabledCacheFlags() or easyCommands.getDisabledCacheFlags() // Only use if you want to edit the enabled/disabled cacheflags.
+	easyCommands.getGatewayIntents() // Only use if you want to edit the GatewayIntents.
 	
 	JDA jda = easyCommands.addExecutor( // Add your custom commands/executors here!
 		new HelpCmd(easyCommands),
@@ -30,7 +36,7 @@ Public library to make slash commands creation for JDA API easier.
 ```
 
 ## CommandExecutor
-#### How to create a custom command with EasyCommands
+#### How to create a custom slash command with EasyCommands
 - Create a new Java class. Ex: HelloCmd.java
 - Extend the class with CommandExecutor. Ex: `public class HelloCmd extends CommandExecutor`
 - You can now override all the necessesary functions. Ex: `getName(), getDescription(), execute(EventData data)`
@@ -42,6 +48,14 @@ Public library to make slash commands creation for JDA API easier.
 alt="youtube thumbnail" width="480" height="340" /></a>
 
 or check out this simple command class: [NowPlayingCmd.java](https://github.com/FrostedCA/EasyCommands/blob/master/src/main/java/ca/tristan/easycommands/commands/music/NowPlayingCmd.java)
+
+## PrefixExecutor
+#### How to create a custom prefix command with EasyCommands
+#### You can edit the default prefix by adding one line of code to your main class. <a href="#example-main-class-setup">See Main class example</a>
+- Create a new Java class. Ex: PHelloCmd.java
+- Extend the class with CommandExecutor. Ex: `public class HelloCmd extends PrefixExecutor`
+- You can now override all the necessesary functions. Ex: `getName(), getDescription(), execute()`
+- When you are done creating your command class, you can register it inside of your Main class. Ex: `JDA jda = easyCommands.addExecutor(new PHelloCmd()).buildJDA();`
 
 ## Config | Available in version 0.4.1+
 #### How to use the Config class?

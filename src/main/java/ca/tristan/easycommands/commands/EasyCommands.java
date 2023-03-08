@@ -53,12 +53,14 @@ public class EasyCommands extends ListenerAdapter {
         }
 
         jdaBuilder = JDABuilder.create(token, gatewayIntents);
-        jdaBuilder.enableCache(enabledCacheFlags);
-        jdaBuilder.disableCache(disabledCacheFlags);
         jdaBuilder.addEventListeners(this);
     }
 
     public JDA buildJDA() throws InterruptedException {
+
+        jdaBuilder.setEnabledIntents(gatewayIntents);
+        jdaBuilder.enableCache(enabledCacheFlags);
+        jdaBuilder.disableCache(disabledCacheFlags);
 
         this.jda = jdaBuilder.build().awaitReady();
 
@@ -86,6 +88,10 @@ public class EasyCommands extends ListenerAdapter {
 
     public List<GatewayIntent> getGatewayIntents() {
         return gatewayIntents;
+    }
+
+    public void addGatewayIntents(GatewayIntent... intents) {
+        this.getGatewayIntents().addAll(List.of(intents));
     }
 
     public List<CacheFlag> getEnabledCacheFlags() {

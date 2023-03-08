@@ -73,6 +73,7 @@ public class EasyCommands extends ListenerAdapter {
         }
 
         updateCommands();
+
         logCurrentExecutors();
 
         return jda;

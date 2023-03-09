@@ -30,9 +30,14 @@ public class PrefixCommands extends ListenerAdapter {
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         String[] args = event.getMessage().getContentRaw().split(" ");
+
+        if(!args[0].contains(prefix) || Objects.requireNonNull(event.getMember()).getUser().isBot()) {
+            return;
+        }
+
         String cmdName = args[0].replace(prefix, "");
         if(easyCommands.getExecutors().containsKey(cmdName) && easyCommands.getExecutors().get(cmdName) instanceof PrefixExecutor executor) {
-            Logger.log(LogType.OK, "This event has been registered.");
+            Logger.log(LogType.PREFIXCMD, "'" + cmdName + "' has been triggered.");
             if(!executor.getAuthorizedChannels(easyCommands.jda).isEmpty() && !executor.getAuthorizedChannels(easyCommands.jda).contains(event.getChannel())) {
                 return;
             }

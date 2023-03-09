@@ -5,5 +5,8 @@ public enum LogType {
     OK,
     ERROR,
     WARNING,
+    PREFIXCMD,
+    SLASHCMD,
+    ;
 
 }

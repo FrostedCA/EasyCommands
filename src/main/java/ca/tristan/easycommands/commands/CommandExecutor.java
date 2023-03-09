@@ -19,6 +19,11 @@ public abstract class CommandExecutor implements IECCommand {
     }
 
     @Override
+    public List<String> getAliases() {
+        return new ArrayList<>();
+    }
+
+    @Override
     public String getDescription() {
         return null;
     }

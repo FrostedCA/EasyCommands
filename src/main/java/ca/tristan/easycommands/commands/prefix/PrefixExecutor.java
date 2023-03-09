@@ -17,6 +17,11 @@ public abstract class PrefixExecutor implements IECCommand {
     }
 
     @Override
+    public List<String> getAliases() {
+        return new ArrayList<>();
+    }
+
+    @Override
     public String getDescription() {
         return null;
     }

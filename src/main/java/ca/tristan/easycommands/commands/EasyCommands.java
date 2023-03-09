@@ -125,14 +125,14 @@ public class EasyCommands extends ListenerAdapter {
 
     public Map<String, IECCommand> getExecutors() { return executorMap; }
 
-    public EasyCommands setExecutors(Map<String, IECCommand> executors) {
-        this.executorMap = executors;
-        return this;
-    }
-
     public EasyCommands addExecutor(IECCommand... executors) {
         for (IECCommand executor : executors) {
             this.executorMap.put(executor.getName(), executor);
+            if(executor.getAliases() != null && !executor.getAliases().isEmpty()) {
+                for (String alias : executor.getAliases()) {
+                    this.executorMap.put(alias, executor);
+                }
+            }
         }
         return this;
     }
@@ -145,6 +145,7 @@ public class EasyCommands extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         if(getExecutors().containsKey(event.getName()) && getExecutors().get(event.getName()) instanceof CommandExecutor executor) {
+            Logger.log(LogType.SLASHCMD, "'" + executor.getName() + "' has been triggered.");
             if(executor.isOwnerOnly() && ! (Objects.requireNonNull(event.getMember())).isOwner()) {
                 event.reply("This command can only be used by the server owner.").setEphemeral(true).queue();
                 return;

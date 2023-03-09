@@ -10,6 +10,8 @@ public interface IECCommand {
 
     String getName();
 
+    List<String> getAliases();
+
     String getDescription();
 
     boolean isOwnerOnly();

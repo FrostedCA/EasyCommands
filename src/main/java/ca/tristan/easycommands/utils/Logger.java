@@ -26,15 +26,17 @@ public class Logger {
         }
 
         switch (type) {
-            case OK -> {
+            case PREFIXCMD:
+            case SLASHCMD:
+            case OK:
                 line = time + ConsoleColors.GREEN_BOLD + type + ": " + ConsoleColors.GREEN + log + ConsoleColors.RESET + (stacktrace != null ? " Stacktrace: " + stacktrace : "");
-            }
-            case WARNING -> {
+                break;
+            case WARNING:
                 line = time + ConsoleColors.YELLOW_BOLD + type + ": " + ConsoleColors.YELLOW + log + ConsoleColors.RESET + (stacktrace != null ? " Stacktrace: " + stacktrace : "");
-            }
-            case ERROR -> {
+                break;
+            case ERROR:
                 line = time + ConsoleColors.RED_BOLD + type + ": " + ConsoleColors.RED + log + ConsoleColors.RESET + (stacktrace != null ? " Stacktrace: " + stacktrace : "");
-            }
+                break;
         }
 
         System.out.println(line);

@@ -6,7 +6,7 @@ Public library to make slash & prefix commands creation for JDA API easier.
 
 ## Summary
 - <a href="#example-main-class-setup">Main Class Example</a>
-- <a href="#commandexecutor">Create a slash command</a>
+- <a href="#slashexecutor">Create a slash command</a>
 - <a href="#prefixexecutor">Create a prefix command</a>
 - <a href="#config--available-in-version-041">Config File Setup</a>
 - <a href="#mysql-database">MySQL Database</a>
@@ -35,10 +35,10 @@ Public library to make slash & prefix commands creation for JDA API easier.
     }
 ```
 
-## CommandExecutor
+## SlashExecutor
 #### How to create a custom slash command with EasyCommands
 - Create a new Java class. Ex: HelloCmd.java
-- Extend the class with CommandExecutor. Ex: `public class HelloCmd extends CommandExecutor`
+- Extend the class with SlashExecutor. Ex: `public class HelloCmd extends SlashExecutor`
 - You can now override all the necessesary functions. Ex: `getName(), getDescription(), execute(EventData data)`
 - When you are done creating your command class, you can register it inside of your Main class. Ex: `JDA jda = easyCommands.addExecutor(new HelloCmd()).buildJDA();`
 - If you still need help you can check out this YouTube video:

@@ -1,15 +1,16 @@
-package ca.tristan.easycommands.commands;
+package ca.tristan.easycommands.commands.slash;
 
+import ca.tristan.easycommands.commands.EventData;
+import ca.tristan.easycommands.commands.IExecutor;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.Channel;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class CommandExecutor implements IECCommand {
+public abstract class SlashExecutor implements IExecutor {
 
     public List<OptionData> options = new ArrayList<>();
 

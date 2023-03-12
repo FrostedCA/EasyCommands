@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 
 import java.util.List;
 
-public interface IECCommand {
+public interface IExecutor {
 
     String getName();
 

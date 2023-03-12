@@ -13,10 +13,9 @@ public class Logger {
      * @param stacktrace If you don't have a stacktrace make it "null", or use the other function without stacktrace.
      */
     public static void log(LogType type, String log, String stacktrace) {
-        int hour = Calendar.getInstance().getTime().getHours();
-        int minute = Calendar.getInstance().getTime().getMinutes();
-        int second = Calendar.getInstance().getTime().getSeconds();
-
+        String hour = String.format("%02d", Calendar.getInstance().getTime().getHours());
+        String minute = String.format("%02d", Calendar.getInstance().getTime().getMinutes());
+        String second = String.format("%02d", Calendar.getInstance().getTime().getSeconds());;
         String time = "[" + hour + ":" + minute + ":" + second + " INFO]: ";
         String line = null;
 

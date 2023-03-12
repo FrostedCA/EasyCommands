@@ -1,18 +1,20 @@
 package ca.tristan.easycommands.commands.music;
 
-import ca.tristan.easycommands.commands.CommandExecutor;
+import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.lavaplayer.PlayerManager;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-public class PlayCmd extends CommandExecutor {
+public class PlayCmd extends SlashExecutor {
 
     @Override
     public String getName() {
@@ -42,6 +44,8 @@ public class PlayCmd extends CommandExecutor {
             return;
         }
 
+        data.getEvent().deferReply().queue();
+
         if(!data.getSelfVoiceState().inAudioChannel()){
             final AudioManager audioManager = data.getGuild().getAudioManager();
             final VoiceChannel memberChannel = (VoiceChannel) data.getMemberVoiceState().getChannel();
@@ -54,7 +58,6 @@ public class PlayCmd extends CommandExecutor {
         if(!isUrl(link)) {
             link = "ytsearch:" + String.join(" ", data.getCommand().getOptions().get(0).getAsString() + " music");
         }
-
         PlayerManager.getInstance().loadAndPlay(data.getTextChannel(), data, link);
     }
 

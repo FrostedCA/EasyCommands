@@ -1,6 +1,6 @@
 package ca.tristan.easycommands.commands.music;
 
-import ca.tristan.easycommands.commands.CommandExecutor;
+import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.lavaplayer.GuildMusicManager;
 import ca.tristan.easycommands.lavaplayer.PlayerManager;
@@ -8,7 +8,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 
-public class SkipCmd extends CommandExecutor {
+public class SkipCmd extends SlashExecutor {
 
     @Override
     public String getName() {

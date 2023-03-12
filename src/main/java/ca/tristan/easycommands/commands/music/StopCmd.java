@@ -1,12 +1,12 @@
 package ca.tristan.easycommands.commands.music;
 
-import ca.tristan.easycommands.commands.CommandExecutor;
+import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.lavaplayer.PlayerManager;
 
 import java.util.Objects;
 
-public class StopCmd extends CommandExecutor {
+public class StopCmd extends SlashExecutor {
 
     @Override
     public String getName() {

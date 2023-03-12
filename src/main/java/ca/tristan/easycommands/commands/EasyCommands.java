@@ -5,7 +5,7 @@ import ca.tristan.easycommands.commands.music.PlayCmd;
 import ca.tristan.easycommands.commands.music.SkipCmd;
 import ca.tristan.easycommands.commands.music.StopCmd;
 import ca.tristan.easycommands.commands.prefix.PrefixCommands;
-import ca.tristan.easycommands.commands.prefix.PrefixExecutor;
+import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.utils.LogType;
 import ca.tristan.easycommands.utils.Logger;
 import net.dv8tion.jda.api.JDA;
@@ -33,7 +33,7 @@ public class EasyCommands extends ListenerAdapter {
     private final JDABuilder jdaBuilder;
 
     private static Connection connection;
-    private Map<String, IECCommand> executorMap = new HashMap<>();
+    private Map<String, IExecutor> executorMap = new HashMap<>();
 
     private List<GatewayIntent> gatewayIntents = new ArrayList<>();
     private List<CacheFlag> enabledCacheFlags = new ArrayList<>();
@@ -123,13 +123,22 @@ public class EasyCommands extends ListenerAdapter {
 
     public static Connection getConnection() { return connection; }
 
-    public Map<String, IECCommand> getExecutors() { return executorMap; }
+    public Map<String, IExecutor> getExecutors() { return executorMap; }
 
-    public EasyCommands addExecutor(IECCommand... executors) {
-        for (IECCommand executor : executors) {
+    public EasyCommands addExecutor(IExecutor... executors) {
+        for (IExecutor executor : executors) {
+            if(executor.getName() == null || executor.getName().isEmpty()) {
+                Logger.log(LogType.WARNING, "Command: '" + executor.getClass().getSimpleName() + "' doesn't have a name and could cause errors.");
+            }
+            if(executor.getDescription() == null || executor.getDescription().isEmpty()) {
+                Logger.log(LogType.WARNING, "Command: '" + executor.getClass().getName() + "' doesn't have a description.");
+            }
             this.executorMap.put(executor.getName(), executor);
             if(executor.getAliases() != null && !executor.getAliases().isEmpty()) {
                 for (String alias : executor.getAliases()) {
+                    if(alias.isEmpty()) {
+                        Logger.log(LogType.WARNING, "Alias: '" + executor.getClass().getSimpleName() + "' doesn't have a name and could cause errors.");
+                    }
                     this.executorMap.put(alias, executor);
                 }
             }
@@ -144,7 +153,7 @@ public class EasyCommands extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        if(getExecutors().containsKey(event.getName()) && getExecutors().get(event.getName()) instanceof CommandExecutor executor) {
+        if(getExecutors().containsKey(event.getName()) && getExecutors().get(event.getName()) instanceof SlashExecutor executor) {
             Logger.log(LogType.SLASHCMD, "'" + executor.getName() + "' has been triggered.");
             if(executor.isOwnerOnly() && ! (Objects.requireNonNull(event.getMember())).isOwner()) {
                 event.reply("This command can only be used by the server owner.").setEphemeral(true).queue();
@@ -183,7 +192,7 @@ public class EasyCommands extends ListenerAdapter {
     public void updateCommands() {
         List<CommandData> commands = new ArrayList<>();
         getExecutors().forEach((name, executor) -> {
-            if(executor instanceof CommandExecutor executor1) {
+            if(executor instanceof SlashExecutor executor1) {
                 commands.add(Commands.slash(executor1.getName(), executor1.getDescription()).addOptions(executor1.getOptions()));
             }
         });

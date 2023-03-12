@@ -1,11 +1,14 @@
-package ca.tristan.easycommands.commands;
+package ca.tristan.easycommands.commands.defaults;
 
+import ca.tristan.easycommands.commands.slash.SlashExecutor;
+import ca.tristan.easycommands.commands.EasyCommands;
+import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.commands.prefix.PrefixExecutor;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.awt.*;
 
-public class HelpCmd extends CommandExecutor {
+public class HelpCmd extends SlashExecutor {
 
     private final EasyCommands easyCommands;
 
@@ -35,7 +38,7 @@ public class HelpCmd extends CommandExecutor {
         builder.setColor(Color.GREEN);
         builder.addField("Slash Commands", "--------------------", false);
         easyCommands.getExecutors().forEach((name, commandExecutor) -> {
-            if(commandExecutor instanceof CommandExecutor && !commandExecutor.isOwnerOnly() && !commandExecutor.getName().equals("help") && (commandExecutor.getDescription() != null || !commandExecutor.getDescription().isEmpty())) {
+            if(commandExecutor instanceof SlashExecutor && !commandExecutor.isOwnerOnly() && !commandExecutor.getName().equals("help") && (commandExecutor.getDescription() != null || !commandExecutor.getDescription().isEmpty())) {
                 builder.addField("/" + commandExecutor.getName(), commandExecutor.getDescription(), false);
             }
         });

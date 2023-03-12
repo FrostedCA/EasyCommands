@@ -10,7 +10,11 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -41,10 +45,10 @@ public class PlayerManager {
 
     public void loadAndPlay(TextChannel textChannel, EventData data, String trackUrl){
         final GuildMusicManager musicManager = this.getMusicManager(textChannel.getGuild());
-        data.deferReply();
         this.audioPlayerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack audioTrack) {
+
                 musicManager.scheduler.queue(audioTrack);
 
                 EmbedBuilder builder = new EmbedBuilder();
@@ -55,8 +59,9 @@ public class PlayerManager {
                 builder.addField("Added by:", data.getCommandSender().getAsMention(), false);
                 builder.setFooter("This music bot was made with EasyCommands.", "https://raw.githubusercontent.com/FrostedCA/EasyCommands/master/LEAFSTACKv2.png");
                 builder.setColor(new Color(95, 86, 188));
-
-                data.getEvent().getHook().sendMessageEmbeds(builder.build()).queue();
+                data.getEvent().getHook().sendMessageEmbeds(builder.build()).addActionRow(
+                        Button.link("https://github.com/FrostedCA/EasyCommands", "EasyCommands").withEmoji(Emoji.fromUnicode("✨"))
+                ).queue();
             }
 
             @Override

@@ -1,12 +1,12 @@
 package ca.tristan.easycommands.commands.music;
 
-import ca.tristan.easycommands.commands.CommandExecutor;
+import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.lavaplayer.GuildMusicManager;
 import ca.tristan.easycommands.lavaplayer.PlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 
-public class NowPlayingCmd extends CommandExecutor {
+public class NowPlayingCmd extends SlashExecutor {
 
     @Override
     public String getName() {

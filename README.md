@@ -1,5 +1,8 @@
 <img src="https://raw.githubusercontent.com/FrostedCA/EasyCommands/master/ECLogo_new.png" width="100" height="100" />
 
+[![Version](https://jitpack.io/v/FrostedCA/EasyCommands.svg)](https://jitpack.io/#FrostedCA/EasyCommands)
+[![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.5+-important)](https://github.com/DV8FromTheWorld/JDA/releases)
+
 # EasyCommands (JDA Slash & Prefix Command handler)
 Public library to make slash & prefix commands creation for JDA API easier.
 #### *Contains a Music Bot*

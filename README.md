@@ -76,6 +76,8 @@ Then you will be able to access your token/etc with `config.getToken()` or `conf
 	Config config = new Config();
        	EasyCommands easyCommands = new EasyCommands(config.getToken(), enableDevCommands?, enableMusicBot?); // If you don't know how to use devCommands leave it to false.
 	
+	easyCommands.mysqlConnect(config.getDB_URL(), config.getDB_User(), config.getDB_Password());
+	
 	JDA jda = easyCommands.addExecutor( // Add your custom commands/executors here!
 		new HelpCmd(easyCommands),
 		new ExampleCmd1()...
@@ -83,6 +85,8 @@ Then you will be able to access your token/etc with `config.getToken()` or `conf
 		new ExampleListener1(),
 		new ExampleListener2()...
 	).buildJDA(); // Starts the bot!
+	
+	easyCommands.setMusicChannel(config.getMusicChannelID());
 	
     }
 ```

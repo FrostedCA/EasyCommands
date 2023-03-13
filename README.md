@@ -2,6 +2,7 @@
 
 [![Version](https://jitpack.io/v/FrostedCA/EasyCommands.svg)](https://jitpack.io/#FrostedCA/EasyCommands)
 [![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.5+-important)](https://github.com/DV8FromTheWorld/JDA/releases)
+[![image](https://discord.com/api/guilds/944538207868059669/embed.png?style=shield)](https://discord.gg/2rfSEGNgrv)
 
 # EasyCommands (JDA Slash & Prefix Command handler)
 Public library to make slash & prefix commands creation for JDA API easier.

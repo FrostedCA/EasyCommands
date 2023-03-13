@@ -4,6 +4,8 @@ Public library to make slash & prefix commands creation for JDA API easier.
 #### Join the [Discord](https://discord.com/invite/2rfSEGNgrv) server for support.
 ### If you want to bring any changes to the library you can create a fork of this branch, contact me on Discord, give good explanation of your changes and they might get added to this official branch.
 
+<img src="https://raw.githubusercontent.com/FrostedCA/EasyCommands/master/ECLogo_new.png" width="100" height="100" />
+
 ## Summary
 - <a href="#example-main-class-setup">Main Class Example</a>
 - <a href="#slashexecutor">Create a slash command</a>

@@ -95,8 +95,12 @@ public class EventData {
         return memberVoiceState;
     }
 
+    public void deferReply(boolean isEphemeral) {
+        event.deferReply(isEphemeral).queue();
+    }
+
     public void deferReply() {
-        event.deferReply().queue();
+        this.deferReply(false);
     }
 
     public ReplyCallbackAction reply(String content, boolean ephemeral) {

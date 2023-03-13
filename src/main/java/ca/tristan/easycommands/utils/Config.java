@@ -63,4 +63,15 @@ public class Config {
         return null;
     }
 
+    public String getMusicChannelID() throws IOException {
+        String line;
+        while((line = bufferedReader.readLine()) != null) {
+            if(line.startsWith("music_channel")) {
+                String[] str = line.split("=");
+                return str[1];
+            }
+        }
+        return null;
+    }
+
 }

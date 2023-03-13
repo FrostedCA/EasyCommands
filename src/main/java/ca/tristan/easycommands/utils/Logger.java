@@ -27,6 +27,7 @@ public class Logger {
         switch (type) {
             case PREFIXCMD:
             case SLASHCMD:
+            case EXECUTORS:
             case OK:
                 line = time + ConsoleColors.GREEN_BOLD + type + ": " + ConsoleColors.GREEN + log + ConsoleColors.RESET + (stacktrace != null ? " Stacktrace: " + stacktrace : "");
                 break;
@@ -43,6 +44,14 @@ public class Logger {
 
     public static void log(LogType type, String log) {
         log(type, log, null);
+    }
+
+    public static void logNoType(String log) {
+        String hour = String.format("%02d", Calendar.getInstance().getTime().getHours());
+        String minute = String.format("%02d", Calendar.getInstance().getTime().getMinutes());
+        String second = String.format("%02d", Calendar.getInstance().getTime().getSeconds());;
+        String time = "[" + hour + ":" + minute + ":" + second + " INFO]: ";
+        System.out.println(time + ConsoleColors.PURPLE + log + ConsoleColors.RESET);
     }
 
     // TODO

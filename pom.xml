@@ -6,7 +6,7 @@
 
     <groupId>ca.tristan.easycommands</groupId>
     <artifactId>EasyCommands</artifactId>
-    <version>0.3</version>
+    <version>0.6</version>
     <packaging>jar</packaging>
     <name>EasyCommands</name>
 
@@ -30,6 +30,10 @@
             <name>m2-dv8tion</name>
             <url>https://m2.dv8tion.net/releases</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -47,6 +51,11 @@
             <groupId>com.sedmelluq</groupId>
             <artifactId>lavaplayer</artifactId>
             <version>1.3.77</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.LowLevelSubmarine</groupId>
+            <artifactId>GeniusLyricsAPI</artifactId>
+            <version>1.0.3</version>
         </dependency>
     </dependencies>
 

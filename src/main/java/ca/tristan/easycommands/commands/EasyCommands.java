@@ -1,24 +1,28 @@
 package ca.tristan.easycommands.commands;
 
-import ca.tristan.easycommands.commands.music.NowPlayingCmd;
-import ca.tristan.easycommands.commands.music.PlayCmd;
-import ca.tristan.easycommands.commands.music.SkipCmd;
-import ca.tristan.easycommands.commands.music.StopCmd;
+import ca.tristan.easycommands.commands.music.*;
 import ca.tristan.easycommands.commands.prefix.PrefixCommands;
 import ca.tristan.easycommands.commands.prefix.PrefixExecutor;
-import ca.tristan.easycommands.commands.slash.CommandExecutor;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
+import ca.tristan.easycommands.events.AutoDisconnectEvent;
+import ca.tristan.easycommands.events.ButtonEvents;
+import ca.tristan.easycommands.utils.ConsoleColors;
 import ca.tristan.easycommands.utils.LogType;
 import ca.tristan.easycommands.utils.Logger;
+import com.mysql.cj.log.Log;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,9 +48,14 @@ public class EasyCommands extends ListenerAdapter {
 
     private PrefixCommands prefixCommands;
 
+    private static Channel musicChannel;
+
+    private Long millisStart, millisEnd;
+
     public EasyCommands(String token, boolean enablePrefixCommands, boolean enableMusicBot) {
         this.usePrefixCommands = enablePrefixCommands;
         this.useMusicBot = enableMusicBot;
+        millisStart = System.currentTimeMillis();
 
         loadIntents();
 
@@ -69,6 +78,7 @@ public class EasyCommands extends ListenerAdapter {
 
         if(this.useMusicBot) {
             enableMusicBot();
+            this.jda.addEventListener(new AutoDisconnectEvent(), new ButtonEvents());
         }
 
         if(usePrefixCommands) {
@@ -77,7 +87,8 @@ public class EasyCommands extends ListenerAdapter {
 
         updateCommands();
         logCurrentExecutors();
-
+        millisEnd = System.currentTimeMillis();
+        Logger.log(LogType.OK, "EasyCommands finished loading in " + ConsoleColors.GREEN_BOLD + (millisEnd - millisStart) + "ms" + ConsoleColors.GREEN + ".");
         return jda;
     }
 
@@ -156,8 +167,7 @@ public class EasyCommands extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        if(getExecutors().containsKey(event.getName()) && (getExecutors().get(event.getName()) instanceof SlashExecutor || getExecutors().get(event.getName()) instanceof CommandExecutor)) {
-            IExecutor executor = getExecutors().get(event.getName());
+        if(getExecutors().containsKey(event.getName()) && getExecutors().get(event.getName()) instanceof SlashExecutor executor) {
             Logger.log(LogType.SLASHCMD, "'" + executor.getName() + "' has been triggered.");
             if(executor.isOwnerOnly() && ! (Objects.requireNonNull(event.getMember())).isOwner()) {
                 event.reply("This command can only be used by the server owner.").setEphemeral(true).queue();
@@ -172,22 +182,14 @@ public class EasyCommands extends ListenerAdapter {
             if(executor.getAuthorizedRoles(jda) != null && !executor.getAuthorizedRoles(jda).isEmpty()) {
                 for (Role authorizedRole : executor.getAuthorizedRoles(jda)) {
                     if(Objects.requireNonNull(event.getMember()).getRoles().contains(authorizedRole)) {
-                        if(executor instanceof CommandExecutor ex) {
-                            ex.execute(new EventData(event));
-                        } else if(executor instanceof SlashExecutor ex) {
-                            ex.execute(new EventData(event));
-                        }
+                        executor.execute(new EventData(event));
                         break;
                     }
                 }
                 return;
             }
 
-            if(executor instanceof CommandExecutor ex) {
-                ex.execute(new EventData(event));
-            } else if(executor instanceof SlashExecutor ex) {
-                ex.execute(new EventData(event));
-            }
+            executor.execute(new EventData(event));
         }
     }
 
@@ -195,17 +197,32 @@ public class EasyCommands extends ListenerAdapter {
      * Used to debug executors. Serve to identify if the commands are registered to Discord correctly.
      */
     private void logCurrentExecutors() {
-        Logger.log(LogType.OK, jda.retrieveCommands().complete().toString());
+
+        List<Command> commands = jda.retrieveCommands().complete();
+        Logger.log(LogType.EXECUTORS, "--- Registered SlashExecutors ---");
+        for (Command command : commands) {
+            Logger.logNoType("/" + command.getName() + ConsoleColors.RESET + ":" + ConsoleColors.CYAN + command.getId());
+        }
+
+        Logger.log(LogType.EXECUTORS, "--- Registered PrefixExecutors ---");
+        getExecutors().forEach((s, iExecutor) -> {
+            if(iExecutor instanceof PrefixExecutor) {
+                if(!iExecutor.getAliases().contains(s)) {
+                    Logger.logNoType(getPrefixCommands().getPrefix() + s);
+                }
+            }
+        });
+
     }
 
     /**
      * Updates all executors/commands to Discord Guild.
      */
-    public void updateCommands() {
+    private void updateCommands() {
         List<CommandData> commands = new ArrayList<>();
         getExecutors().forEach((name, executor) -> {
             if(executor instanceof SlashExecutor executor1) {
-                commands.add(Commands.slash(executor1.getName(), executor1.getDescription()).addOptions(executor1.getOptions()));
+                commands.add(Commands.slash(name, executor1.getDescription()).addOptions(executor1.getOptions()));
             }
         });
         jda.updateCommands().addCommands(commands).queue();
@@ -226,9 +243,23 @@ public class EasyCommands extends ListenerAdapter {
         return this;
     }
 
-    public void enableMusicBot() {
-        this.addExecutor(new PlayCmd(), new StopCmd(), new NowPlayingCmd(), new SkipCmd());
-        Logger.log(LogType.OK, "Music bot enabled.");
+    private void enableMusicBot() {
+        this.addExecutor(new PlayCmd(), new StopCmd(), new NowPlayingCmd(), new SkipCmd(), new PauseCmd(), new LyricsCmd());
+        Logger.log(LogType.OK, "EasyCommands MusicBot has been enabled successfully.");
+    }
+
+    public void setMusicChannel(String id) {
+
+        if(this.jda == null) {
+            Logger.log(LogType.ERROR, "Can't set the music channel before building JDA.");
+            return;
+        }
+
+        musicChannel = this.jda.getTextChannelById(id);
+    }
+
+    public static Channel getMusicChannel() {
+        return musicChannel;
     }
 
 }

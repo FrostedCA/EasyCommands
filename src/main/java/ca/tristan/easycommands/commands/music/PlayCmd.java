@@ -1,8 +1,11 @@
 package ca.tristan.easycommands.commands.music;
 
+import ca.tristan.easycommands.commands.EasyCommands;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.lavaplayer.PlayerManager;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -12,6 +15,7 @@ import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlayCmd extends SlashExecutor {
@@ -33,6 +37,15 @@ public class PlayCmd extends SlashExecutor {
     }
 
     @Override
+    public List<Channel> getAuthorizedChannels(JDA jda) {
+        List<Channel> channels = new ArrayList<>();
+        if(EasyCommands.getMusicChannel() != null) {
+            channels.add(EasyCommands.getMusicChannel());
+        }
+        return channels;
+    }
+
+    @Override
     public void execute(EventData data) {
         if(data.getCommand().getOptions().isEmpty()) {
             data.getEvent().reply("You need to specify a music. Usage: '/play <music>'").setEphemeral(true).queue();
@@ -44,7 +57,7 @@ public class PlayCmd extends SlashExecutor {
             return;
         }
 
-        data.getEvent().deferReply().queue();
+        data.deferReply();
 
         if(!data.getSelfVoiceState().inAudioChannel()){
             final AudioManager audioManager = data.getGuild().getAudioManager();

@@ -45,13 +45,13 @@ public class PrefixCommands extends ListenerAdapter {
         if(easyCommands.getExecutors().containsKey(cmdName) && easyCommands.getExecutors().get(cmdName) instanceof PrefixExecutor executor) {
 
             String[] options = event.getMessage().getContentRaw().replace(prefix + cmdName + " ", "").split(" ");
-            Logger.log(LogType.WARNING, Arrays.toString(options));
             for (int i = 0; i < options.length; i++) {
                 executor.getOptions().get(i).setStringValue(options[i]);
             }
 
             Logger.log(LogType.PREFIXCMD, "'" + cmdName + "' has been triggered.");
             if(!executor.getAuthorizedChannels(easyCommands.jda).isEmpty() && !executor.getAuthorizedChannels(easyCommands.jda).contains(event.getChannel())) {
+                Logger.log(LogType.WARNING, "PrefixCommand: '" + cmdName + "' has been triggered but the channel it was executed in isn't authorized.");
                 return;
             }
 

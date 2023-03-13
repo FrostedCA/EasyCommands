@@ -7,6 +7,7 @@ public enum LogType {
     WARNING,
     PREFIXCMD,
     SLASHCMD,
+    EXECUTORS,
     ;
 
 }

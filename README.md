@@ -65,6 +65,8 @@ token=token
 db_url=localhost:3306/example
 db_username=username
 db_password=password
+//available in version 0.6+
+music_channel=id
 ```
 To access those parameters inside of your code you need to instantiate a new Config variable. Ex: `Config config = new Config();`
 Then you will be able to access your token/etc with `config.getToken()` or `config.getDB_URL()` etc.

@@ -81,6 +81,7 @@ public class SkipCmd extends SlashExecutor {
         musicEB.getBuilder().setDescription("Skipped the current music.");
         musicEB.getBuilder().addField("Now playing", musicManager.audioPlayer.getPlayingTrack().getInfo().title, false);
         musicEB.getBuilder().addField("By", musicManager.audioPlayer.getPlayingTrack().getInfo().author, false);
+        musicEB.getBuilder().addField("Skipped by", data.getCommandSender().getAsMention(), false);
 
         data.reply(musicEB.getBuilder().build(), false).setActionRow(musicEB.getActionRow()).queue();
     }

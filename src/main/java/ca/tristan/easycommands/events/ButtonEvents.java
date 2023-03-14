@@ -42,7 +42,7 @@ public class ButtonEvents extends ListenerAdapter {
                 musicEB.getBuilder().setDescription("Current music has been unpause.");
                 musicEB.getBuilder().addField("Unpause by", event.getMember().getAsMention(), false);
             }
-            event.replyEmbeds(musicEB.getBuilder().build()).setActionRow(musicEB.getActionRow()).queue();
+            event.editMessageEmbeds(musicEB.getBuilder().build()).setActionRow(musicEB.getActionRow()).queue();
         } else if (event.getComponentId().equals("stop")) {
             MusicEB musicEB = new MusicEB();
             if(!event.getMember().getVoiceState().inAudioChannel()){
@@ -63,7 +63,7 @@ public class ButtonEvents extends ListenerAdapter {
                 event.getGuild().getAudioManager().closeAudioConnection();
                 musicEB.getBuilder().setDescription("The player has been stopped and the queue has been cleared.");
                 musicEB.getBuilder().addField("Stopped by", event.getMember().getAsMention(), false);
-                event.replyEmbeds(musicEB.getBuilder().build()).setActionRow(
+                event.editMessageEmbeds(musicEB.getBuilder().build()).setActionRow(
                         Button.link("https://github.com/FrostedCA/EasyCommands", "EasyCommands").withEmoji(Emoji.fromUnicode("✨"))
                 ).queue();
             }
@@ -107,8 +107,9 @@ public class ButtonEvents extends ListenerAdapter {
             musicEB.getBuilder().setDescription("Skipped the current music.");
             musicEB.getBuilder().addField("Now playing", musicManager.audioPlayer.getPlayingTrack().getInfo().title, false);
             musicEB.getBuilder().addField("By", musicManager.audioPlayer.getPlayingTrack().getInfo().author, false);
+            musicEB.getBuilder().addField("Skipped by", event.getMember().getAsMention(), false);
 
-            event.replyEmbeds(musicEB.getBuilder().build()).setActionRow(musicEB.getActionRow()).queue();
+            event.editMessageEmbeds(musicEB.getBuilder().build()).setActionRow(musicEB.getActionRow()).queue();
         } else if (event.getComponentId().equals("lyrics")) {
             final GuildMusicManager musicManager = PlayerManager.getInstance().getMusicManager(event.getGuild());
             final AudioPlayer audioPlayer = musicManager.audioPlayer;

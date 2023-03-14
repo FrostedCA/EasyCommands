@@ -15,7 +15,7 @@ Public library to make slash & prefix commands creation for JDA API easier.
 - <a href="#example-main-class-setup">Main Class Example</a>
 - <a href="#slashexecutor">Create a slash command</a>
 - <a href="#prefixexecutor">Create a prefix command</a>
-- <a href="#config--available-in-version-041">Config File Setup</a>
+- <a href="#config">Config File Setup</a>
 - <a href="#mysql-database">MySQL Database</a>
 - <a href="#download">Download</a>
 
@@ -23,13 +23,12 @@ Public library to make slash & prefix commands creation for JDA API easier.
 #### Latest Version: [GitHub Release](https://github.com/FrostedCA/EasyCommands/releases/latest)
 ```java
     public static void main(String[] args) throws InterruptedException {
-
-       	EasyCommands easyCommands = new EasyCommands("token", enablePrefixCommands?, enableMusicBot?); // If you don't know how to use devCommands leave it to false.
+       	EasyCommands easyCommands = new EasyCommands();
 	
 	easyCommands.getPrefixCommands().setPrefix("prefix"); // Only if you want to change the default prefix from '!'
 	
-	easyCommands.getEnabledCacheFlags() or easyCommands.getDisabledCacheFlags() // Only use if you want to edit the enabled/disabled cacheflags.
-	easyCommands.getGatewayIntents() // Only use if you want to edit the GatewayIntents.
+	easyCommands.addEnabledCacheFlags() or easyCommands.addDisabledCacheFlags() // Only use if you want to edit the enabled/disabled cacheflags.
+	easyCommands.addGatewayIntents() // Only use if you want to edit the GatewayIntents.
 	
 	JDA jda = easyCommands.addExecutor( // Add your custom commands/executors here!
 		new HelpCmd(easyCommands),
@@ -38,7 +37,6 @@ Public library to make slash & prefix commands creation for JDA API easier.
 		new ExampleListener1(),
 		new ExampleListener2()...
 	).buildJDA(); // Starts the bot!
-	
     }
 ```
 
@@ -64,26 +62,27 @@ or check out this simple command class: [NowPlayingCmd.java](https://github.com/
 - You can now override all the necessesary functions. Ex: `getName(), getDescription(), execute()`
 - When you are done creating your command class, you can register it inside of your Main class. Ex: `JDA jda = easyCommands.addExecutor(new PHelloCmd()).buildJDA();`
 
-## Config | Available in version 0.4.1+
+## Config
 #### How to use the Config class?
 Config example:
 ```ini
 token=token
-db_url=localhost:3306/example
+use_mysql=true/false
+db_host=host ex: localhost
+db_port=port ex: 3306
+db_name=name //Database (Schema name)
 db_username=username
 db_password=password
-//available in version 0.6+
-music_channel=id
+use_music_bot=true/false
+use_prefixcommands=true/false
 ```
-To access those parameters inside of your code you need to instantiate a new Config variable. Ex: `Config config = new Config();`
-Then you will be able to access your token/etc with `config.getToken()` or `config.getDB_URL()` etc.
+To access those parameters inside of your code you need to use a `EasyCommands` instance.
 #### Main class with Config
 ```java
     public static void main(String[] args) throws InterruptedException, IOException {
-	Config config = new Config();
-       	EasyCommands easyCommands = new EasyCommands(config.getToken(), enableDevCommands?, enableMusicBot?); // If you don't know how to use devCommands leave it to false.
+       	EasyCommands easyCommands = new EasyCommands();
 	
-	easyCommands.mysqlConnect(config.getDB_URL(), config.getDB_User(), config.getDB_Password());
+	easyCommands.getConfig(); <------
 	
 	JDA jda = easyCommands.addExecutor( // Add your custom commands/executors here!
 		new HelpCmd(easyCommands),
@@ -92,17 +91,12 @@ Then you will be able to access your token/etc with `config.getToken()` or `conf
 		new ExampleListener1(),
 		new ExampleListener2()...
 	).buildJDA(); // Starts the bot!
-	
-	easyCommands.setMusicChannel(config.getMusicChannelID());
-	
     }
 ```
 
 ## MySQL Database
 #### How to use a MySQL database with the library.
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=3O5csTk7QnI
-" target="_blank"><img src="http://img.youtube.com/vi/3O5csTk7QnI/0.jpg" 
-alt="youtube thumbnail" width="480" height="340" /></a>
+You need to configure the Config file correctly. See --> <a href="#config">Config File Setup</a>
 
 ## Download
 [![Version](https://jitpack.io/v/FrostedCA/EasyCommands.svg)](https://jitpack.io/#FrostedCA/EasyCommands)

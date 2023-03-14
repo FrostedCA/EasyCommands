@@ -3,41 +3,39 @@ package ca.tristan.easycommands.commands;
 import ca.tristan.easycommands.commands.music.*;
 import ca.tristan.easycommands.commands.prefix.PrefixCommands;
 import ca.tristan.easycommands.commands.prefix.PrefixExecutor;
+import ca.tristan.easycommands.commands.slash.SlashCommands;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
+import ca.tristan.easycommands.database.MySQL;
 import ca.tristan.easycommands.events.AutoDisconnectEvent;
 import ca.tristan.easycommands.events.ButtonEvents;
+import ca.tristan.easycommands.utils.Config;
 import ca.tristan.easycommands.utils.ConsoleColors;
 import ca.tristan.easycommands.utils.LogType;
 import ca.tristan.easycommands.utils.Logger;
-import com.mysql.cj.log.Log;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.Channel;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import org.jetbrains.annotations.NotNull;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.io.IOException;
+import java.sql.*;
 import java.util.*;
 
-public class EasyCommands extends ListenerAdapter {
+public class EasyCommands {
 
     public JDA jda;
 
     private final boolean usePrefixCommands;
     private final boolean useMusicBot;
     private final JDABuilder jdaBuilder;
+
+    private static MySQL mySQL;
 
     private static Connection connection;
     private Map<String, IExecutor> executorMap = new HashMap<>();
@@ -47,17 +45,43 @@ public class EasyCommands extends ListenerAdapter {
     private List<CacheFlag> disabledCacheFlags = new ArrayList<>();
 
     private PrefixCommands prefixCommands;
+    private SlashCommands slashCommands;
 
-    private static Channel musicChannel;
+    private static Map<Guild, Channel> musicChannels = new HashMap<>();
 
-    private Long millisStart, millisEnd;
+    private final Long millisStart;
 
-    public EasyCommands(String token, boolean enablePrefixCommands, boolean enableMusicBot) {
-        this.usePrefixCommands = enablePrefixCommands;
-        this.useMusicBot = enableMusicBot;
+    private Config config;
+
+    public EasyCommands() throws IOException {
+        this.config = new Config();
+        this.usePrefixCommands = this.config.getUsePrefixCommands();
+        this.useMusicBot = this.config.getUseMusicBot();
+
         millisStart = System.currentTimeMillis();
 
         loadIntents();
+
+        this.slashCommands = new SlashCommands(this);
+
+        if(usePrefixCommands) {
+            this.prefixCommands = new PrefixCommands(this);
+            getGatewayIntents().add(GatewayIntent.MESSAGE_CONTENT);
+        }
+
+        jdaBuilder = JDABuilder.create(this.config.getToken(), gatewayIntents);
+        jdaBuilder.addEventListeners(slashCommands);
+    }
+
+    public EasyCommands(String token, boolean usePrefixCommands, boolean useMusicBot) throws IOException {
+        this.usePrefixCommands = usePrefixCommands;
+        this.useMusicBot = useMusicBot;
+
+        millisStart = System.currentTimeMillis();
+
+        loadIntents();
+
+        this.slashCommands = new SlashCommands(this);
 
         if(usePrefixCommands) {
             this.prefixCommands = new PrefixCommands(this);
@@ -65,7 +89,7 @@ public class EasyCommands extends ListenerAdapter {
         }
 
         jdaBuilder = JDABuilder.create(token, gatewayIntents);
-        jdaBuilder.addEventListeners(this);
+        jdaBuilder.addEventListeners(slashCommands);
     }
 
     public JDA buildJDA() throws InterruptedException {
@@ -75,6 +99,16 @@ public class EasyCommands extends ListenerAdapter {
         jdaBuilder.disableCache(disabledCacheFlags);
 
         this.jda = jdaBuilder.build().awaitReady();
+
+        Logger.log(LogType.LISTENERS, jda.getRegisteredListeners().toString());
+
+        if(this.config.getUseMysql()) {
+            try {
+                this.mysqlInit();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         if(this.useMusicBot) {
             enableMusicBot();
@@ -87,8 +121,7 @@ public class EasyCommands extends ListenerAdapter {
 
         updateCommands();
         logCurrentExecutors();
-        millisEnd = System.currentTimeMillis();
-        Logger.log(LogType.OK, "EasyCommands finished loading in " + ConsoleColors.GREEN_BOLD + (millisEnd - millisStart) + "ms" + ConsoleColors.GREEN + ".");
+        Logger.log(LogType.OK, "EasyCommands finished loading in " + ConsoleColors.GREEN_BOLD + (System.currentTimeMillis() - millisStart) + "ms" + ConsoleColors.GREEN + ".");
         return jda;
     }
 
@@ -112,8 +145,16 @@ public class EasyCommands extends ListenerAdapter {
         return enabledCacheFlags;
     }
 
+    public void addEnabledCacheFlags(CacheFlag... flags) {
+        this.getEnabledCacheFlags().addAll(List.of(flags));
+    }
+
     public List<CacheFlag> getDisabledCacheFlags() {
         return disabledCacheFlags;
+    }
+
+    public void addDisabledCacheFlags(CacheFlag... flags) {
+        this.getDisabledCacheFlags().addAll(List.of(flags));
     }
 
     public PrefixCommands getPrefixCommands() {
@@ -122,17 +163,55 @@ public class EasyCommands extends ListenerAdapter {
 
     /**
      * Connects a MySQL database to EasyCommands.
-     * @param url Example format: "localhost:3306/database".
-     * @param username Database username.
-     * @param password Database password.
      */
-    public void mysqlConnect(String url, String username, String password) {
+    private void mysqlInit() throws SQLException {
+        mySQL = new MySQL(this.config.getDB_Host(), this.config.getDB_Port(), this.config.getDB_Database(), this.config.getDB_User(), this.config.getDB_Password());
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://" + url, username, password);
+            mySQL.connect();
             Logger.log(LogType.OK, "Database connection successful.");
         } catch (SQLException e) {
-            Logger.log(LogType.ERROR, "Error while trying to connect to database.", Arrays.toString(e.getStackTrace()));
+            e.printStackTrace();
+            Logger.log(LogType.ERROR, "Error while trying to connect to database. Try reloading maven project.");
+            return;
         }
+
+        if(mySQL.checkConnection(0)) {
+            DatabaseMetaData dbm = mySQL.getConnection().getMetaData();
+            ResultSet tables = dbm.getTables(null, null, "guilds", null);
+            if(tables.next()) {
+                loadMySQLGuilds();
+                return;
+            }
+            String table = "CREATE TABLE guilds ( guild_id varchar(255) primary key, music_channel varchar(255) )";
+            PreparedStatement preparedStatement = mySQL.getConnection().prepareStatement(table);
+            preparedStatement.execute();
+            loadMySQLGuilds();
+        }
+    }
+
+    private void loadMySQLGuilds() {
+        jda.getGuilds().forEach(guild -> {
+            try {
+                PreparedStatement ps = mySQL.getConnection().prepareStatement("SELECT * FROM guilds WHERE guild_id=?");
+                ps.setString(1, guild.getId());
+                ResultSet rs = ps.executeQuery();
+                if(rs.next()) {
+                    musicChannels.put(guild, guild.getTextChannelById(rs.getString(2)));
+                    return;
+                }
+
+                String query = "INSERT INTO guilds (guild_id) values(?)";
+                PreparedStatement ps2 = mySQL.getConnection().prepareStatement(query);
+                ps2.setString(1, guild.getId());
+                ps2.execute();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    public static MySQL getMySQL() {
+        return mySQL;
     }
 
     public static Connection getConnection() { return connection; }
@@ -165,46 +244,18 @@ public class EasyCommands extends ListenerAdapter {
         return this;
     }
 
-    @Override
-    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        if(getExecutors().containsKey(event.getName()) && getExecutors().get(event.getName()) instanceof SlashExecutor executor) {
-            Logger.log(LogType.SLASHCMD, "'" + executor.getName() + "' has been triggered.");
-            if(executor.isOwnerOnly() && ! (Objects.requireNonNull(event.getMember())).isOwner()) {
-                event.reply("This command can only be used by the server owner.").setEphemeral(true).queue();
-                return;
-            }
-
-            if(!executor.getAuthorizedChannels(jda).isEmpty() && !executor.getAuthorizedChannels(jda).contains(event.getChannel())) {
-                event.reply("This command cannot be used in this channel.").setEphemeral(true).queue();
-                return;
-            }
-
-            if(executor.getAuthorizedRoles(jda) != null && !executor.getAuthorizedRoles(jda).isEmpty()) {
-                for (Role authorizedRole : executor.getAuthorizedRoles(jda)) {
-                    if(Objects.requireNonNull(event.getMember()).getRoles().contains(authorizedRole)) {
-                        executor.execute(new EventData(event));
-                        break;
-                    }
-                }
-                return;
-            }
-
-            executor.execute(new EventData(event));
-        }
-    }
-
     /**
      * Used to debug executors. Serve to identify if the commands are registered to Discord correctly.
      */
     private void logCurrentExecutors() {
 
         List<Command> commands = jda.retrieveCommands().complete();
-        Logger.log(LogType.EXECUTORS, "--- Registered SlashExecutors ---");
+        Logger.log(LogType.EXECUTORS, ConsoleColors.BLUE_BOLD + "- Logging registered Executors");
+        Logger.logNoType(ConsoleColors.BLUE_BOLD + "- [Slash]");
         for (Command command : commands) {
             Logger.logNoType("/" + command.getName() + ConsoleColors.RESET + ":" + ConsoleColors.CYAN + command.getId());
         }
-
-        Logger.log(LogType.EXECUTORS, "--- Registered PrefixExecutors ---");
+        Logger.logNoType(ConsoleColors.BLUE_BOLD + "- [Prefix]");
         getExecutors().forEach((s, iExecutor) -> {
             if(iExecutor instanceof PrefixExecutor) {
                 if(!iExecutor.getAliases().contains(s)) {
@@ -231,7 +282,6 @@ public class EasyCommands extends ListenerAdapter {
     public EasyCommands registerListeners(ListenerAdapter... listeners) {
 
         if(List.of(listeners).isEmpty()) {
-            Logger.log(LogType.WARNING, "No listener are registered. Ignore this message if you're not supposed to have any.");
             return this;
         }
 
@@ -239,27 +289,19 @@ public class EasyCommands extends ListenerAdapter {
             jdaBuilder.addEventListeners(listener);
         }
 
-        Logger.log(LogType.OK, List.of(listeners).toString());
         return this;
     }
 
+    public static Map<Guild, Channel> getMusicChannels() {
+        return musicChannels;
+    }
+
     private void enableMusicBot() {
-        this.addExecutor(new PlayCmd(), new StopCmd(), new NowPlayingCmd(), new SkipCmd(), new PauseCmd(), new LyricsCmd());
+        this.addExecutor(new PlayCmd(), new StopCmd(), new NowPlayingCmd(), new SkipCmd(), new PauseCmd(), new LyricsCmd(), new SetMusicChannelCmd());
         Logger.log(LogType.OK, "EasyCommands MusicBot has been enabled successfully.");
     }
 
-    public void setMusicChannel(String id) {
-
-        if(this.jda == null) {
-            Logger.log(LogType.ERROR, "Can't set the music channel before building JDA.");
-            return;
-        }
-
-        musicChannel = this.jda.getTextChannelById(id);
+    public Config getConfig() {
+        return config;
     }
-
-    public static Channel getMusicChannel() {
-        return musicChannel;
-    }
-
 }

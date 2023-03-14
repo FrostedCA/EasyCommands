@@ -38,17 +38,17 @@ public class MySQL {
     }
 
     public synchronized void connect() throws SQLException {
-        connection = DriverManager.getConnection("jdbc:mysql:://" + host + ":" + port + "/" + database + "?autoReconnect=true", user, password);
+        connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, user, password);
     }
 
-    public synchronized void checkConnection(int timeout) throws SQLException {
+    public synchronized boolean checkConnection(int timeout) throws SQLException {
         if(connection == null) {
             connect();
         }
         try {
-            connection.isValid(timeout);
+            return connection.isValid(timeout);
         } catch (SQLException e) {
-
+            return false;
         }
     }
 

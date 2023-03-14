@@ -8,6 +8,7 @@ public enum LogType {
     PREFIXCMD,
     SLASHCMD,
     EXECUTORS,
+    LISTENERS,
     ;
 
 }

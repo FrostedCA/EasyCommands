@@ -28,6 +28,7 @@ public class Logger {
             case PREFIXCMD:
             case SLASHCMD:
             case EXECUTORS:
+            case LISTENERS:
             case OK:
                 line = time + ConsoleColors.GREEN_BOLD + type + ": " + ConsoleColors.GREEN + log + ConsoleColors.RESET + (stacktrace != null ? " Stacktrace: " + stacktrace : "");
                 break;

@@ -22,7 +22,7 @@ Public library to make slash & prefix commands creation for JDA API easier.
 ## Example Main class setup.
 #### Latest Version: [GitHub Release](https://github.com/FrostedCA/EasyCommands/releases/latest)
 ```java
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
        	EasyCommands easyCommands = new EasyCommands();
 	
 	easyCommands.getPrefixCommands().setPrefix("prefix"); // Only if you want to change the default prefix from '!'

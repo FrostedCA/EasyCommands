@@ -190,13 +190,20 @@ public class EasyCommands {
     }
 
     private void loadMySQLGuilds() {
+
+        if(jda.getGuilds().isEmpty()) {
+            return;
+        }
+
         jda.getGuilds().forEach(guild -> {
             try {
                 PreparedStatement ps = mySQL.getConnection().prepareStatement("SELECT * FROM guilds WHERE guild_id=?");
                 ps.setString(1, guild.getId());
                 ResultSet rs = ps.executeQuery();
                 if(rs.next()) {
-                    musicChannels.put(guild, guild.getTextChannelById(rs.getString(2)));
+                    if(rs.getString(2) != null) {
+                        musicChannels.put(guild, guild.getTextChannelById(rs.getString(2)));
+                    }
                     return;
                 }
 

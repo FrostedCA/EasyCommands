@@ -25,11 +25,6 @@ Public library to make slash & prefix commands creation for JDA API easier.
     public static void main(String[] args) throws InterruptedException, IOException {
        	EasyCommands easyCommands = new EasyCommands();
 	
-	easyCommands.getPrefixCommands().setPrefix("prefix"); // Only if you want to change the default prefix from '!'
-	
-	easyCommands.addEnabledCacheFlags() or easyCommands.addDisabledCacheFlags() // Only use if you want to edit the enabled/disabled cacheflags.
-	easyCommands.addGatewayIntents() // Only use if you want to edit the GatewayIntents.
-	
 	JDA jda = easyCommands.addExecutor( // Add your custom commands/executors here!
 		new HelpCmd(easyCommands),
 		new ExampleCmd1()...
@@ -38,6 +33,14 @@ Public library to make slash & prefix commands creation for JDA API easier.
 		new ExampleListener2()...
 	).buildJDA(); // Starts the bot!
     }
+```
+
+## Change the Gateway Intents or CacheFlags
+To change the intents or the enabled/disabled cache flags you can add those lines in your Main class under `EasyCommands easyCommands = new EasyCommands();`
+```
+easyCommands.addEnabledCacheFlags().add(YourFlags);
+easyCommands.addDisabledCacheFlags().add(YourFlags);
+easyCommands.addGatewayIntents().add(YourIntents);
 ```
 
 ## SlashExecutor
@@ -61,6 +64,9 @@ or check out this simple command class: [NowPlayingCmd.java](https://github.com/
 - Extend the class with CommandExecutor. Ex: `public class HelloCmd extends PrefixExecutor`
 - You can now override all the necessesary functions. Ex: `getName(), getDescription(), execute()`
 - When you are done creating your command class, you can register it inside of your Main class. Ex: `JDA jda = easyCommands.addExecutor(new PHelloCmd()).buildJDA();`
+#### How to change the prefix for commands?
+`easyCommands.getPrefixCommands().setPrefix("prefix");`
+Simply add this line inside your Main class under `EasyCommands easyCommands = new EasyCommands();`
 
 ## Config
 #### How to use the Config class?
@@ -71,7 +77,7 @@ use_mysql=true/false
 db_host=host ex: localhost
 db_port=port ex: 3306
 db_name=name //Database (Schema name)
-db_user=username
+db_user=user
 db_password=password
 use_music_bot=true/false
 use_prefixcommands=true/false

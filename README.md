@@ -25,8 +25,6 @@ Public library to make slash & prefix commands creation for JDA API easier.
     public static void main(String[] args) throws InterruptedException, IOException {
        	EasyCommands easyCommands = new EasyCommands();
 	
-	
-	
 	JDA jda = easyCommands.addExecutor( // Add your custom commands/executors here!
 		new HelpCmd(easyCommands),
 		new ExampleCmd1()...

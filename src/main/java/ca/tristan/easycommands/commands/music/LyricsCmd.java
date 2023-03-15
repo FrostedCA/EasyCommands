@@ -31,6 +31,9 @@ public class LyricsCmd extends SlashExecutor {
     @Override
     public List<Channel> getAuthorizedChannels(JDA jda) {
         List<Channel> channels = new ArrayList<>();
+        if(EasyCommands.getMusicChannels().isEmpty()) {
+            return channels;
+        }
         EasyCommands.getMusicChannels().forEach((guild, channel) -> {
             channels.add(channel);
         });

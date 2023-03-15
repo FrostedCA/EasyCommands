@@ -1,5 +1,7 @@
-package ca.tristan.easycommands.commands;
+package ca.tristan.easycommands;
 
+import ca.tristan.easycommands.commands.IExecutor;
+import ca.tristan.easycommands.commands.defaults.SetMusicChannelCmd;
 import ca.tristan.easycommands.commands.music.*;
 import ca.tristan.easycommands.commands.prefix.PrefixCommands;
 import ca.tristan.easycommands.commands.prefix.PrefixExecutor;
@@ -38,16 +40,16 @@ public class EasyCommands {
     private static MySQL mySQL;
 
     private static Connection connection;
-    private Map<String, IExecutor> executorMap = new HashMap<>();
+    private final Map<String, IExecutor> executorMap = new HashMap<>();
 
-    private List<GatewayIntent> gatewayIntents = new ArrayList<>();
-    private List<CacheFlag> enabledCacheFlags = new ArrayList<>();
-    private List<CacheFlag> disabledCacheFlags = new ArrayList<>();
+    private final List<GatewayIntent> gatewayIntents = new ArrayList<>();
+    private final List<CacheFlag> enabledCacheFlags = new ArrayList<>();
+    private final List<CacheFlag> disabledCacheFlags = new ArrayList<>();
 
     private PrefixCommands prefixCommands;
-    private SlashCommands slashCommands;
+    private final SlashCommands slashCommands;
 
-    private static Map<Guild, Channel> musicChannels = new HashMap<>();
+    private final Map<Guild, Channel> guildsMusicChannel = new HashMap<>();
 
     private final Long millisStart;
 
@@ -102,7 +104,7 @@ public class EasyCommands {
 
         Logger.log(LogType.LISTENERS, jda.getRegisteredListeners().toString());
 
-        if(this.config.getUseMysql()) {
+        if(this.config != null && this.config.getUseMysql()) {
             try {
                 this.mysqlInit();
             } catch (SQLException e) {
@@ -189,33 +191,23 @@ public class EasyCommands {
         }
     }
 
-    private void loadMySQLGuilds() {
+    private void loadMySQLGuilds() throws SQLException {
 
         if(jda.getGuilds().isEmpty()) {
             return;
         }
 
-        jda.getGuilds().forEach(guild -> {
-            try {
-                PreparedStatement ps = mySQL.getConnection().prepareStatement("SELECT * FROM guilds WHERE guild_id=?");
-                ps.setString(1, guild.getId());
-                ResultSet rs = ps.executeQuery();
-                if(rs.next()) {
-                    if(rs.getString(2) == null || rs.getString(2).isEmpty()) {
-                        return;
-                    }
-                    musicChannels.put(guild, guild.getTextChannelById(rs.getString(2)));
-                    return;
-                }
-
-                String query = "INSERT INTO guilds (guild_id) values(?)";
-                PreparedStatement ps2 = mySQL.getConnection().prepareStatement(query);
-                ps2.setString(1, guild.getId());
-                ps2.execute();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+        PreparedStatement preparedStatement = mySQL.getConnection().prepareStatement("SELECT * FROM guilds");
+        ResultSet rs = preparedStatement.executeQuery();
+        while(rs.next()) {
+            if((rs.getString(1) == null || rs.getString(1).isEmpty()) || (rs.getString(2) == null || rs.getString(2).isEmpty())) {
+                continue;
             }
-        });
+            if(jda.getGuilds().contains(jda.getGuildById(rs.getString(1)))) {
+                Guild guild = jda.getGuildById(rs.getString(1));
+                guildsMusicChannel.put(guild, guild.getTextChannelById(rs.getString(2)));
+            }
+        }
     }
 
     public static MySQL getMySQL() {
@@ -300,16 +292,21 @@ public class EasyCommands {
         return this;
     }
 
-    public static Map<Guild, Channel> getMusicChannels() {
-        return musicChannels;
+    public Map<Guild, Channel> getGuildsMusicChannel() {
+        return guildsMusicChannel;
     }
 
     private void enableMusicBot() {
-        this.addExecutor(new PlayCmd(), new StopCmd(), new NowPlayingCmd(), new SkipCmd(), new PauseCmd(), new LyricsCmd(), new SetMusicChannelCmd());
+        this.addExecutor(new PlayCmd(this), new StopCmd(this), new NowPlayingCmd(this), new SkipCmd(this), new PauseCmd(this), new LyricsCmd(this), new SetMusicChannelCmd());
         Logger.log(LogType.OK, "EasyCommands MusicBot has been enabled successfully.");
     }
 
     public Config getConfig() {
         return config;
     }
+
+    public JDA getJDA() {
+        return jda;
+    }
+
 }

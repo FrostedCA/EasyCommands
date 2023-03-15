@@ -1,5 +1,6 @@
 package ca.tristan.easycommands.commands.slash;
 
+import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.commands.IExecutor;
 import net.dv8tion.jda.api.JDA;

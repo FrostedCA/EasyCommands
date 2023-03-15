@@ -1,16 +1,14 @@
 package ca.tristan.easycommands.commands.music;
 
-import ca.tristan.easycommands.commands.EasyCommands;
+import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.lavaplayer.PlayerManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.net.URI;
@@ -19,6 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayCmd extends SlashExecutor {
+
+    public final EasyCommands easyCommands;
+
+    public PlayCmd(EasyCommands easyCommands) {
+        this.easyCommands = easyCommands;
+    }
 
     @Override
     public String getName() {
@@ -39,10 +43,10 @@ public class PlayCmd extends SlashExecutor {
     @Override
     public List<Channel> getAuthorizedChannels(JDA jda) {
         List<Channel> channels = new ArrayList<>();
-        if(EasyCommands.getMusicChannels().isEmpty()) {
+        if(easyCommands.getGuildsMusicChannel().isEmpty()) {
             return channels;
         }
-        EasyCommands.getMusicChannels().forEach((guild, channel) -> {
+        easyCommands.getGuildsMusicChannel().forEach((guild, channel) -> {
             channels.add(channel);
         });
         return channels;

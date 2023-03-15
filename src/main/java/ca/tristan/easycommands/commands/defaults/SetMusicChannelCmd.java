@@ -1,6 +1,6 @@
-package ca.tristan.easycommands.commands.music;
+package ca.tristan.easycommands.commands.defaults;
 
-import ca.tristan.easycommands.commands.EasyCommands;
+import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.embeds.MusicEB;

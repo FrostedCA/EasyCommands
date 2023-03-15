@@ -1,6 +1,6 @@
 package ca.tristan.easycommands.commands.prefix;
 
-import ca.tristan.easycommands.commands.EasyCommands;
+import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.utils.LogType;
 import ca.tristan.easycommands.utils.Logger;
 import net.dv8tion.jda.api.entities.Role;
@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 public class PrefixCommands extends ListenerAdapter {

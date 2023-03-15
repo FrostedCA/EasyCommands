@@ -1,6 +1,6 @@
 package ca.tristan.easycommands.commands.slash;
 
-import ca.tristan.easycommands.commands.EasyCommands;
+import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.utils.LogType;
 import ca.tristan.easycommands.utils.Logger;
@@ -13,7 +13,7 @@ import java.util.Objects;
 
 public class SlashCommands extends ListenerAdapter {
 
-    private EasyCommands easyCommands;
+    private final EasyCommands easyCommands;
 
     public SlashCommands(EasyCommands easyCommands) {
         this.easyCommands = easyCommands;

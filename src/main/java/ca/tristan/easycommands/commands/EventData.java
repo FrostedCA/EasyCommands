@@ -1,5 +1,6 @@
 package ca.tristan.easycommands.commands;
 
+import ca.tristan.easycommands.EasyCommands;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;

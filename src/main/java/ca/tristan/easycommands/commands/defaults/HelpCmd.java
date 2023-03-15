@@ -1,14 +1,12 @@
 package ca.tristan.easycommands.commands.defaults;
 
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
-import ca.tristan.easycommands.commands.EasyCommands;
+import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.commands.prefix.PrefixExecutor;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import java.awt.*;
-import java.util.List;
 
 public class HelpCmd extends SlashExecutor {
 

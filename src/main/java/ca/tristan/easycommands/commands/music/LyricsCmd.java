@@ -1,6 +1,6 @@
 package ca.tristan.easycommands.commands.music;
 
-import ca.tristan.easycommands.commands.EasyCommands;
+import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.embeds.MusicEB;
@@ -18,6 +18,12 @@ import java.util.List;
 
 public class LyricsCmd extends SlashExecutor {
 
+    public final EasyCommands easyCommands;
+
+    public LyricsCmd(EasyCommands easyCommands) {
+        this.easyCommands = easyCommands;
+    }
+
     @Override
     public String getName() {
         return "lyrics";
@@ -31,10 +37,10 @@ public class LyricsCmd extends SlashExecutor {
     @Override
     public List<Channel> getAuthorizedChannels(JDA jda) {
         List<Channel> channels = new ArrayList<>();
-        if(EasyCommands.getMusicChannels().isEmpty()) {
+        if(easyCommands.getGuildsMusicChannel().isEmpty()) {
             return channels;
         }
-        EasyCommands.getMusicChannels().forEach((guild, channel) -> {
+        easyCommands.getGuildsMusicChannel().forEach((guild, channel) -> {
             channels.add(channel);
         });
         return channels;

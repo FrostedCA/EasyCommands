@@ -201,9 +201,10 @@ public class EasyCommands {
                 ps.setString(1, guild.getId());
                 ResultSet rs = ps.executeQuery();
                 if(rs.next()) {
-                    if(rs.getString(2) != null) {
-                        musicChannels.put(guild, guild.getTextChannelById(rs.getString(2)));
+                    if(rs.getString(2) == null || rs.getString(2).isEmpty()) {
+                        return;
                     }
+                    musicChannels.put(guild, guild.getTextChannelById(rs.getString(2)));
                     return;
                 }
 

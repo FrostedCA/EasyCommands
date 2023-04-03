@@ -25,6 +25,7 @@ public class Config {
             return;
         }
         PrintWriter bufferedWriter = new PrintWriter(new FileWriter(this.file));
+        bufferedWriter.println("# IF YOU DON'T WANT TO USE MYSQL JUST LEAVE THE CONFIG LINES **EMPTY OR REMOVE** THEM AND THEY WILL GET IGNORED.");
         bufferedWriter.println(ConfigSettings.TOKEN.label);
         bufferedWriter.println("# Database Settings");
         bufferedWriter.println(ConfigSettings.USE_MYSQL.label);
@@ -48,14 +49,14 @@ public class Config {
             String[] settings = line.split("=");
             switch (settings[0]) {
                 case "token" -> token = settings[1];
-                case "use_mysql" -> mysql = Boolean.parseBoolean(settings[1]);
-                case "db_host" -> dbHost = settings[1];
-                case "db_port" -> dbPort = Integer.parseInt(settings[1]);
-                case "db_name" -> dbName = settings[1];
-                case "db_user" -> dbUser = settings[1];
-                case "db_password" -> dbPassword = settings[1];
-                case "use_music_bot" -> musicBot = Boolean.parseBoolean(settings[1]);
-                case "use_prefixcommands" -> prefixCommands = Boolean.parseBoolean(settings[1]);
+                case "use_mysql" -> mysql = settings.length == 2 && Boolean.parseBoolean(settings[1]);
+                case "db_host" -> dbHost = settings.length == 2 ? settings[1] : "";
+                case "db_port" -> dbPort = settings.length == 2 ? Integer.parseInt(settings[1]) : 0;
+                case "db_name" -> dbName = settings.length == 2 ? settings[1] : "";
+                case "db_user" -> dbUser = settings.length == 2 ? settings[1] : "";
+                case "db_password" -> dbPassword = settings.length == 2 ? settings[1] : "";
+                case "use_music_bot" -> musicBot = settings.length == 2 && Boolean.parseBoolean(settings[1]);
+                case "use_prefixcommands" -> prefixCommands = settings.length == 2 && Boolean.parseBoolean(settings[1]);
             }
         }
         Logger.log(LogType.OK, "Config loaded.");

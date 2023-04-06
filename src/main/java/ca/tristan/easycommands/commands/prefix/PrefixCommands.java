@@ -44,7 +44,7 @@ public class PrefixCommands extends ListenerAdapter {
         if(easyCommands.getExecutors().containsKey(cmdName) && easyCommands.getExecutors().get(cmdName) instanceof PrefixExecutor executor) {
 
             String[] options = event.getMessage().getContentRaw().replace(prefix + cmdName + " ", "").split(" ");
-            if(options.length > 0) {
+            if(options.length > 0 && executor.getOptions().size() > 0) {
                 for (int i = 0; i < options.length; i++) {
                     executor.getOptions().get(i).setStringValue(options[i]);
                 }

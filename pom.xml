@@ -6,13 +6,13 @@
 
     <groupId>ca.tristan.easycommands</groupId>
     <artifactId>EasyCommands</artifactId>
-    <version>0.6.3</version>
+    <version>0.6.8.1</version>
     <packaging>jar</packaging>
     <name>EasyCommands</name>
 
     <properties>
-        <maven.compiler.source>19</maven.compiler.source>
-        <maven.compiler.target>19</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

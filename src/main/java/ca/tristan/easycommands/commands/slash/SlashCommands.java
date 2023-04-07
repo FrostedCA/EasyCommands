@@ -21,7 +21,8 @@ public class SlashCommands extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        if(easyCommands.getExecutors().containsKey(event.getName()) && easyCommands.getExecutors().get(event.getName()) instanceof SlashExecutor executor) {
+        if(easyCommands.getExecutors().containsKey(event.getName()) && easyCommands.getExecutors().get(event.getName()) instanceof SlashExecutor) {
+            SlashExecutor executor = (SlashExecutor) easyCommands.getExecutors().get(event.getName());
             Logger.log(LogType.SLASHCMD, "'" + executor.getName() + "' has been triggered.");
             if(executor.isOwnerOnly() && ! (Objects.requireNonNull(event.getMember())).isOwner()) {
                 event.reply("This command can only be used by the server owner.").setEphemeral(true).queue();

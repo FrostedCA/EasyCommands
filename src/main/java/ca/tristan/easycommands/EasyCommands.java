@@ -272,7 +272,8 @@ public class EasyCommands {
     private void updateCommands() {
         List<CommandData> commands = new ArrayList<>();
         getExecutors().forEach((name, executor) -> {
-            if(executor instanceof SlashExecutor executor1) {
+            if(executor instanceof SlashExecutor) {
+                SlashExecutor executor1 = (SlashExecutor) executor;
                 commands.add(Commands.slash(name, executor1.getDescription()).addOptions(executor1.getOptions()));
             }
         });

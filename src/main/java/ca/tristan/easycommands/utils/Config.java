@@ -48,15 +48,33 @@ public class Config {
         while((line = bufferedReader.readLine()) != null) {
             String[] settings = line.split("=");
             switch (settings[0]) {
-                case "token" -> token = settings[1];
-                case "use_mysql" -> mysql = settings.length == 2 && Boolean.parseBoolean(settings[1]);
-                case "db_host" -> dbHost = settings.length == 2 ? settings[1] : "";
-                case "db_port" -> dbPort = settings.length == 2 ? Integer.parseInt(settings[1]) : 0;
-                case "db_name" -> dbName = settings.length == 2 ? settings[1] : "";
-                case "db_user" -> dbUser = settings.length == 2 ? settings[1] : "";
-                case "db_password" -> dbPassword = settings.length == 2 ? settings[1] : "";
-                case "use_music_bot" -> musicBot = settings.length == 2 && Boolean.parseBoolean(settings[1]);
-                case "use_prefixcommands" -> prefixCommands = settings.length == 2 && Boolean.parseBoolean(settings[1]);
+                case "token":
+                    token = settings[1];
+                    break;
+                case "use_mysql":
+                    mysql = settings.length == 2 && Boolean.parseBoolean(settings[1]);
+                    break;
+                case "db_host":
+                    dbHost = settings.length == 2 ? settings[1] : "";
+                    break;
+                case "db_port":
+                    dbPort = settings.length == 2 ? Integer.parseInt(settings[1]) : 0;
+                    break;
+                case "db_name":
+                    dbName = settings.length == 2 ? settings[1] : "";
+                    break;
+                case "db_user":
+                    dbUser = settings.length == 2 ? settings[1] : "";
+                    break;
+                case "db_password":
+                    dbPassword = settings.length == 2 ? settings[1] : "";
+                    break;
+                case "use_music_bot":
+                    musicBot = settings.length == 2 && Boolean.parseBoolean(settings[1]);
+                    break;
+                case "use_prefixcommands":
+                    prefixCommands = settings.length == 2 && Boolean.parseBoolean(settings[1]);
+                    break;
             }
         }
         Logger.log(LogType.OK, "Config loaded.");

@@ -31,7 +31,7 @@ Public library to make slash & prefix commands creation for JDA API easier.
 	).registerListeners( // Add your custom listeners/events here!
 		new ExampleListener1(),
 		new ExampleListener2()...
-	).buildJDA(); // Starts the bot!
+	).addGatewayIntents(/*enabled gateway intents in here // leave empty if any*/).addEnabledCacheFlags(/*enabled cache flags in here // leave empty if any*/).buildJDA(); // Starts the bot!
     }
 ```
 
@@ -70,19 +70,11 @@ Simply add this line inside your Main class under `EasyCommands easyCommands = n
 
 ## Config
 #### How to use the Config class?
-Config example:
-```ini
-token=token
-use_mysql=true/false
-db_host=host ex: localhost
-db_port=port ex: 3306
-db_name=name //Database (Schema name)
-db_user=user
-db_password=password
-use_music_bot=true/false
-use_prefixcommands=true/false
-```
-To access those parameters inside of your code you need to use a `EasyCommands` instance.
+
+The Config file settings get generated automaticaly on creation.
+If you want to update the config file when a new version releases take a look at [ConfigSettings](https://github.com/FrostedCA/EasyCommands/blob/master/src/main/java/ca/tristan/easycommands/utils/ConfigSettings.java)
+
+To access the config settings inside of your code you need to use a `EasyCommands` instance can get the function `getConfig()`
 #### Main class with Config
 ```java
     public static void main(String[] args) throws InterruptedException, IOException {

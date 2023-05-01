@@ -37,14 +37,6 @@ Public library to make slash & prefix commands creation for JDA API easier.
     }
 ```
 
-## Change the Gateway Intents or CacheFlags
-To change the intents or the enabled/disabled cache flags you can add those lines in your Main class under `EasyCommands easyCommands = new EasyCommands();`
-```
-easyCommands.addEnabledCacheFlags().add(YourFlags);
-easyCommands.addDisabledCacheFlags().add(YourFlags);
-easyCommands.addGatewayIntents().add(YourIntents);
-```
-
 ## SlashExecutor
 #### How to create a custom slash command with EasyCommands
 - Create a new Java class. Ex: HelloCmd.java

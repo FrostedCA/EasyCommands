@@ -39,16 +39,34 @@ Public library to make slash & prefix commands creation for JDA API easier.
 
 ## SlashExecutor
 #### How to create a custom slash command with EasyCommands
-- Create a new Java class. Ex: HelloCmd.java
-- Extend the class with SlashExecutor. Ex: `public class HelloCmd extends SlashExecutor`
-- You can now override all the necessesary functions. Ex: `getName(), getDescription(), execute(EventData data)`
-- When you are done creating your command class, you can register it inside of your Main class. Ex: `JDA jda = easyCommands.addExecutor(new HelloCmd()).buildJDA();`
-- If you still need help you can check out this YouTube video:
+Example slash executor class (Implement needed events)
+**Includes more settings than shown in the example**
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=7IUPpeEWM_M
-" target="_blank"><img src="http://img.youtube.com/vi/7IUPpeEWM_M/0.jpg" 
-alt="youtube thumbnail" width="480" height="340" /></a>
+```
+public class ExampleCmd extends SlashExecutor {
 
+    @Override
+    public String getName() {
+        return "hello";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Say Hello world!";
+    }
+    
+    @Override
+    public boolean isOwnerOnly() {
+        return false;
+    }
+    
+    @Override
+    public void execute(EventData data, MySQL mySQL) {
+    	data.reply("Hello world!", false).queue();
+    }
+
+}
+```
 or check out this simple command class: [NowPlayingCmd.java](https://github.com/FrostedCA/EasyCommands/blob/master/src/main/java/ca/tristan/easycommands/commands/music/NowPlayingCmd.java)
 
 ## PrefixExecutor
@@ -64,7 +82,6 @@ Simply add this line inside your Main class under `EasyCommands easyCommands = n
 
 ## Config
 #### How to use the Config class?
-
 The Config file settings get generated automaticaly on creation.
 If you want to update the config file when a new version releases take a look at [ConfigSettings](https://github.com/FrostedCA/EasyCommands/blob/master/src/main/java/ca/tristan/easycommands/utils/ConfigSettings.java)
 
@@ -74,7 +91,7 @@ To access the config settings inside of your code you need to use a `EasyCommand
     public static void main(String[] args) throws InterruptedException, IOException {
        	EasyCommands easyCommands = new EasyCommands();
 	
-	easyCommands.getConfig(); <------
+	easyCommands.getConfig().get...; <------ !!!
 	
 	JDA jda = easyCommands.addExecutor( // Add your custom commands/executors here!
 		new HelpCmd(easyCommands),

@@ -31,7 +31,9 @@ Public library to make slash & prefix commands creation for JDA API easier.
 	).registerListeners( // Add your custom listeners/events here!
 		new ExampleListener1(),
 		new ExampleListener2()...
-	).addGatewayIntents(/*enabled gateway intents in here // leave empty if any*/).addEnabledCacheFlags(/*enabled cache flags in here // leave empty if any*/).buildJDA(); // Starts the bot!
+	).addGatewayIntents(/*leave empty if any*/)
+	.addEnabledCacheFlags(/*leave empty if any*/)
+	.buildJDA(); // Starts the bot!
     }
 ```
 

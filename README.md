@@ -39,10 +39,10 @@ Public library to make slash & prefix commands creation for JDA API easier.
 
 ## SlashExecutor
 #### How to create a custom slash command with EasyCommands
-Example slash executor class (Implement needed events)
-**Includes more settings than shown in the example**
+Example slash executor class (Implement needed functions)
+**Includes more functions than shown in the example**
 
-```
+```java
 public class ExampleCmd extends SlashExecutor {
 
     @Override

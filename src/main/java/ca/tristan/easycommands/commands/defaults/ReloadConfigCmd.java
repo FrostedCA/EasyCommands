@@ -3,6 +3,7 @@ package ca.tristan.easycommands.commands.defaults;
 import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
+import ca.tristan.easycommands.database.MySQL;
 
 import java.io.IOException;
 
@@ -30,7 +31,7 @@ public class ReloadConfigCmd extends SlashExecutor {
     }
 
     @Override
-    public void execute(EventData data) {
+    public void execute(EventData data, MySQL mySQL) {
         try {
             this.easyCommands.getConfig().loadConfig();
             data.reply("Config has been reload successfully.", true).queue();

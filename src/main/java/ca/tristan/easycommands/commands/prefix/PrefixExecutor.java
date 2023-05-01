@@ -1,6 +1,7 @@
 package ca.tristan.easycommands.commands.prefix;
 
 import ca.tristan.easycommands.commands.IExecutor;
+import ca.tristan.easycommands.database.MySQL;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -47,6 +48,6 @@ public abstract class PrefixExecutor implements IExecutor {
         return new ArrayList<>();
     }
 
-    public void execute(MessageReceivedEvent event) { }
+    public void execute(MessageReceivedEvent event, MySQL mySQL) { }
 
 }

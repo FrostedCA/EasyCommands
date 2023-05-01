@@ -4,6 +4,7 @@ import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.commands.prefix.PrefixExecutor;
+import ca.tristan.easycommands.database.MySQL;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.awt.*;
@@ -32,7 +33,7 @@ public class HelpCmd extends SlashExecutor {
     }
 
     @Override
-    public void execute(EventData data) {
+    public void execute(EventData data, MySQL mySQL) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle("Help - " + data.getGuild().getName());
         builder.setColor(Color.GREEN);

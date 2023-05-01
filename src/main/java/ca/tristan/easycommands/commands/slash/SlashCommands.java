@@ -3,7 +3,6 @@ package ca.tristan.easycommands.commands.slash;
 import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.utils.LogType;
-import ca.tristan.easycommands.utils.Logger;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -23,7 +22,7 @@ public class SlashCommands extends ListenerAdapter {
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         if(easyCommands.getExecutors().containsKey(event.getName()) && easyCommands.getExecutors().get(event.getName()) instanceof SlashExecutor) {
             SlashExecutor executor = (SlashExecutor) easyCommands.getExecutors().get(event.getName());
-            Logger.log(LogType.SLASHCMD, "'" + executor.getName() + "' has been triggered.");
+            easyCommands.getLogger().logBoth(LogType.SLASHCMD, "'" + executor.getName() + "' has been triggered.", event.getMember());
             if(executor.isOwnerOnly() && ! (Objects.requireNonNull(event.getMember())).isOwner()) {
                 event.reply("This command can only be used by the server owner.").setEphemeral(true).queue();
                 return;
@@ -37,14 +36,14 @@ public class SlashCommands extends ListenerAdapter {
             if(executor.getAuthorizedRoles(easyCommands.jda) != null && !executor.getAuthorizedRoles(easyCommands.jda).isEmpty()) {
                 for (Role authorizedRole : executor.getAuthorizedRoles(easyCommands.jda)) {
                     if(Objects.requireNonNull(event.getMember()).getRoles().contains(authorizedRole)) {
-                        executor.execute(new EventData(event));
+                        executor.execute(new EventData(event), easyCommands.getMySQL());
                         break;
                     }
                 }
                 return;
             }
 
-            executor.execute(new EventData(event));
+            executor.execute(new EventData(event), easyCommands.getMySQL());
         }
     }
 

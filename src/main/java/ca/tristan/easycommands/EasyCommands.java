@@ -9,6 +9,7 @@ import ca.tristan.easycommands.commands.slash.SlashCommands;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.database.MySQL;
 import ca.tristan.easycommands.events.AutoDisconnectEvent;
+import ca.tristan.easycommands.events.AutoRoleEvents;
 import ca.tristan.easycommands.events.ButtonEvents;
 import ca.tristan.easycommands.utils.Config;
 import ca.tristan.easycommands.utils.ConsoleColors;
@@ -17,7 +18,9 @@ import ca.tristan.easycommands.utils.Logger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -33,13 +36,10 @@ public class EasyCommands {
 
     public JDA jda;
 
-    private final boolean usePrefixCommands;
-    private final boolean useMusicBot;
     private final JDABuilder jdaBuilder;
 
-    private static MySQL mySQL;
-
-    private static Connection connection;
+    private MySQL mySQL;
+    
     private final Map<String, IExecutor> executorMap = new HashMap<>();
 
     private final List<GatewayIntent> gatewayIntents = new ArrayList<>();
@@ -55,10 +55,13 @@ public class EasyCommands {
 
     private Config config;
 
+    private TextChannel logChannel;
+
+    private Logger logger;
+
     public EasyCommands() throws IOException {
         this.config = new Config();
-        this.usePrefixCommands = this.config.getUsePrefixCommands();
-        this.useMusicBot = this.config.getUseMusicBot();
+        this.logger = new Logger(this);
 
         millisStart = System.currentTimeMillis();
 
@@ -66,7 +69,7 @@ public class EasyCommands {
 
         this.slashCommands = new SlashCommands(this);
 
-        if(usePrefixCommands) {
+        if(this.config.getUsePrefixCommands()) {
             this.prefixCommands = new PrefixCommands(this);
             getGatewayIntents().add(GatewayIntent.MESSAGE_CONTENT);
         }
@@ -75,9 +78,8 @@ public class EasyCommands {
         jdaBuilder.addEventListeners(slashCommands);
     }
 
-    public EasyCommands(String token, boolean usePrefixCommands, boolean useMusicBot) throws IOException {
-        this.usePrefixCommands = usePrefixCommands;
-        this.useMusicBot = useMusicBot;
+    @Deprecated
+    public EasyCommands(String token, boolean usePrefixCommands) throws IOException {
 
         millisStart = System.currentTimeMillis();
 
@@ -112,14 +114,22 @@ public class EasyCommands {
             }
         }
 
-        if(this.useMusicBot) {
+        if(this.config != null && this.config.getUseMusicBot()) {
             enableMusicBot();
             this.jda.addEventListener(new AutoDisconnectEvent(), new ButtonEvents());
         }
 
-        if(usePrefixCommands) {
+        if(this.config != null && this.config.getUsePrefixCommands()) {
             this.jda.addEventListener(prefixCommands);
         }
+
+        Role memberRole = !this.config.getMemberRoleID().isBlank() ? this.jda.getRoleById(this.config.getMemberRoleID()) : null;
+        Role botRole = !this.config.getBotRoleID().isBlank() ? this.jda.getRoleById(this.config.getBotRoleID()) : null;
+
+        this.jda.addEventListener(new AutoRoleEvents(memberRole, botRole));
+
+        logChannel = !this.config.getLogChannelID().isBlank() ? this.jda.getTextChannelById(this.config.getLogChannelID()) : null;
+
 
         updateCommands();
         logCurrentExecutors();
@@ -139,16 +149,18 @@ public class EasyCommands {
         return gatewayIntents;
     }
 
-    public void addGatewayIntents(GatewayIntent... intents) {
+    public EasyCommands addGatewayIntents(GatewayIntent... intents) {
         this.getGatewayIntents().addAll(List.of(intents));
+        return this;
     }
 
     public List<CacheFlag> getEnabledCacheFlags() {
         return enabledCacheFlags;
     }
 
-    public void addEnabledCacheFlags(CacheFlag... flags) {
+    public EasyCommands addEnabledCacheFlags(CacheFlag... flags) {
         this.getEnabledCacheFlags().addAll(List.of(flags));
+        return this;
     }
 
     public List<CacheFlag> getDisabledCacheFlags() {
@@ -210,11 +222,9 @@ public class EasyCommands {
         }
     }
 
-    public static MySQL getMySQL() {
+    public MySQL getMySQL() {
         return mySQL;
     }
-
-    public static Connection getConnection() { return connection; }
 
     public Map<String, IExecutor> getExecutors() { return executorMap; }
 
@@ -310,4 +320,11 @@ public class EasyCommands {
         return jda;
     }
 
+    public TextChannel getLogChannel() {
+        return logChannel;
+    }
+
+    public Logger getLogger() {
+        return logger;
+    }
 }

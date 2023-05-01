@@ -31,8 +31,6 @@ public class EventData {
 
     private final InteractionHook hook;
 
-    private final Connection connection;
-
     private final SlashCommandInteractionEvent event;
 
     public EventData(SlashCommandInteractionEvent event) {
@@ -50,8 +48,6 @@ public class EventData {
 
         this.selfVoiceState = this.selfMember != null ? this.selfMember.getVoiceState() : null;
         this.memberVoiceState = this.commandSender != null ? this.commandSender.getVoiceState() : null;
-
-        this.connection = EasyCommands.getConnection() != null ? EasyCommands.getConnection() : null;
 
         this.event = event;
     }
@@ -114,10 +110,6 @@ public class EventData {
 
     public InteractionHook getHook() {
         return hook;
-    }
-
-    public Connection getConnection() {
-        return connection;
     }
 
     public SlashCommandInteractionEvent getEvent() {

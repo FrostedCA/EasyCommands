@@ -3,6 +3,7 @@ package ca.tristan.easycommands.commands.music;
 import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
+import ca.tristan.easycommands.database.MySQL;
 import ca.tristan.easycommands.embeds.MusicEB;
 import ca.tristan.easycommands.lavaplayer.GuildMusicManager;
 import ca.tristan.easycommands.lavaplayer.PlayerManager;
@@ -52,14 +53,14 @@ public class PauseCmd extends SlashExecutor {
     }
 
     @Override
-    public void execute(EventData data) {
+    public void execute(EventData data, MySQL mySQL) {
 
         GuildMusicManager guildMusicManager = PlayerManager.getInstance().getMusicManager(data.getGuild());
 
         if(guildMusicManager.scheduler.player.getPlayingTrack() == null) {
             MusicEB musicEB = new MusicEB();
             musicEB.getBuilder().setDescription("There is no music currently playing.");
-            data.reply(musicEB.getBuilder().build(), false).setActionRow(
+            data.reply(musicEB.getBuilder().build(), true).setActionRow(
                     Button.link("https://github.com/FrostedCA/EasyCommands", "EasyCommands").withEmoji(Emoji.fromUnicode("✨"))
             ).queue();
             return;

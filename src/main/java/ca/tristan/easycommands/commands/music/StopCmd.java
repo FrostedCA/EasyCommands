@@ -3,6 +3,7 @@ package ca.tristan.easycommands.commands.music;
 import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.commands.EventData;
+import ca.tristan.easycommands.database.MySQL;
 import ca.tristan.easycommands.embeds.MusicEB;
 import ca.tristan.easycommands.lavaplayer.PlayerManager;
 import net.dv8tion.jda.api.JDA;
@@ -45,7 +46,7 @@ public class StopCmd extends SlashExecutor {
     }
 
     @Override
-    public void execute(EventData data) {
+    public void execute(EventData data, MySQL mySQL) {
 
         MusicEB musicEB = new MusicEB();
         if(!data.getMemberVoiceState().inAudioChannel()){

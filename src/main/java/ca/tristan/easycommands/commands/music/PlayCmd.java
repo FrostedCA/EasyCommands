@@ -3,6 +3,7 @@ package ca.tristan.easycommands.commands.music;
 import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.commands.EventData;
+import ca.tristan.easycommands.database.MySQL;
 import ca.tristan.easycommands.lavaplayer.PlayerManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -53,7 +54,7 @@ public class PlayCmd extends SlashExecutor {
     }
 
     @Override
-    public void execute(EventData data) {
+    public void execute(EventData data, MySQL mySQL) {
         if(data.getCommand().getOptions().isEmpty()) {
             data.getEvent().reply("You need to specify a music. Usage: '/play <music>'").setEphemeral(true).queue();
             return;

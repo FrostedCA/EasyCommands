@@ -3,9 +3,11 @@ package ca.tristan.easycommands.commands.slash;
 import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.commands.IExecutor;
+import ca.tristan.easycommands.database.MySQL;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.ArrayList;
@@ -49,7 +51,7 @@ public abstract class SlashExecutor implements IExecutor {
         return new ArrayList<>();
     }
 
-    public void execute(EventData data) {
+    public void execute(EventData event, MySQL mySQL) {
 
     }
 

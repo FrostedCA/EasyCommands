@@ -3,6 +3,7 @@ package ca.tristan.easycommands.commands.defaults;
 import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
+import ca.tristan.easycommands.database.MySQL;
 import ca.tristan.easycommands.embeds.MusicEB;
 
 import java.sql.PreparedStatement;
@@ -26,10 +27,10 @@ public class SetMusicChannelCmd extends SlashExecutor {
     }
 
     @Override
-    public void execute(EventData data) {
+    public void execute(EventData data, MySQL mySQL) {
 
         try {
-            PreparedStatement ps = EasyCommands.getMySQL().getConnection().prepareStatement("UPDATE guilds set music_channel = ? WHERE guild_id = ?");
+            PreparedStatement ps = mySQL.getConnection().prepareStatement("UPDATE guilds set music_channel = ? WHERE guild_id = ?");
             ps.setString(1, data.getChannel().getId());
             ps.setString(2, data.getGuild().getId());
             ps.executeUpdate();

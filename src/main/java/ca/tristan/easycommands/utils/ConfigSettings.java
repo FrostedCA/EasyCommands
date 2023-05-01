@@ -11,9 +11,12 @@ public enum ConfigSettings {
     DB_PASSWORD("db_password="),
     USE_MUSIC_BOT("use_music_bot="),
     USE_PREFIXCOMMANDS("use_prefixcommands="),
+    MEMBER_ROLE_ID("member_role_id="),
+    BOT_ROLE_ID("bot_role_id="),
+    LOG_CHANNEL_ID("log_channel_id=")
     ;
 
-    public String label;
+    public final String label;
 
     ConfigSettings(String label) {
         this.label = label;

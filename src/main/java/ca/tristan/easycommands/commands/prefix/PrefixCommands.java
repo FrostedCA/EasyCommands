@@ -50,16 +50,16 @@ public class PrefixCommands extends ListenerAdapter {
                 }
             }
 
-            Logger.log(LogType.PREFIXCMD, "'" + cmdName + "' has been triggered.");
+            easyCommands.getLogger().logBoth(LogType.PREFIXCMD, "'" + cmdName + "' has been triggered.", event.getMember());
             if(!executor.getAuthorizedChannels(easyCommands.jda).isEmpty() && !executor.getAuthorizedChannels(easyCommands.jda).contains(event.getChannel())) {
-                Logger.log(LogType.WARNING, "PrefixCommand: '" + cmdName + "' has been triggered but the channel it was executed in isn't authorized.");
+                easyCommands.getLogger().logBoth(LogType.WARNING, "PrefixCommand: '" + cmdName + "' has been triggered but the channel it was executed in isn't authorized.", event.getMember());
                 return;
             }
 
             if(executor.getAuthorizedRoles(easyCommands.jda) != null && !executor.getAuthorizedRoles(easyCommands.jda).isEmpty()) {
                 for (Role authorizedRole : executor.getAuthorizedRoles(easyCommands.jda)) {
                     if(Objects.requireNonNull(event.getMember()).getRoles().contains(authorizedRole)) {
-                        executor.execute(event);
+                        executor.execute(event, easyCommands.getMySQL());
                         event.getMessage().delete().queue();
                         break;
                     }
@@ -67,7 +67,7 @@ public class PrefixCommands extends ListenerAdapter {
                 return;
             }
 
-            executor.execute(event);
+            executor.execute(event, easyCommands.getMySQL());
             event.getMessage().delete().queue();
         }
     }

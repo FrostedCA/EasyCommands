@@ -1,6 +1,6 @@
 [![Version](https://jitpack.io/v/FrostedCA/EasyCommands.svg)](https://jitpack.io/#FrostedCA/EasyCommands)
 [![Release](https://img.shields.io/github/release/FrostedCA/EasyCommands.svg)](https://github.com/FrostedCA/EasyCommands/releases/latest)
-[![JDA](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.5+-important)](https://github.com/DV8FromTheWorld/JDA/releases)
+[![JDA](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.8+-important)](https://github.com/DV8FromTheWorld/JDA/releases)
 [![Discord](https://discord.com/api/guilds/944538207868059669/embed.png?style=shield)](https://discord.gg/2rfSEGNgrv)
 
 <img align="right" src="https://raw.githubusercontent.com/FrostedCA/EasyCommands/master/ECLogo_new.png" width="200" height="200" />

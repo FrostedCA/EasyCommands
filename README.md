@@ -80,6 +80,11 @@ or check out this simple command class: [NowPlayingCmd.java](https://github.com/
 `easyCommands.getPrefixCommands().setPrefix("prefix");`
 Simply add this line inside your Main class under `EasyCommands easyCommands = new EasyCommands();`
 
+## Register an Executor
+In your main class when building the JDA ->
+`.addExecutor(new ExampleCmd())`
+`.addExecutor(new ExampleCmd1(), new ExampleCmd2(), new ExampleCmd3()...)` (You can also add multiple commands inside that function)
+
 ## Config
 #### How to use the Config class?
 The Config file settings get generated automaticaly on creation.

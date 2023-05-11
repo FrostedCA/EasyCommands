@@ -1,5 +1,6 @@
 package ca.tristan.easycommands.embeds;
 
+import ca.tristan.easycommands.EasyCommands;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -15,7 +16,7 @@ public class MusicEB {
     public MusicEB() {
         builder = new EmbedBuilder();
         builder.setTitle("Music Player");
-        builder.setColor(new Color(166, 101, 186));
+        builder.setColor(EasyCommands.getConfig().getMusicEmbedColor());
         builder.setFooter("This music bot was created using EasyCommands.", "https://raw.githubusercontent.com/FrostedCA/EasyCommands/master/ECLogo_new.png");
         this.actionRow = List.of(
                 Button.link("https://github.com/FrostedCA/EasyCommands", "EasyCommands").withEmoji(Emoji.fromUnicode("✨")),

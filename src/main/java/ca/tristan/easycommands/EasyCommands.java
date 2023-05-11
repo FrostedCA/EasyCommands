@@ -51,19 +51,17 @@ public class EasyCommands {
 
     private final Map<Guild, Channel> guildsMusicChannel = new HashMap<>();
 
-    private final Long millisStart;
+    private Long millisStart;
 
-    private Config config;
+    private static Config config;
 
     private TextChannel logChannel;
 
     private Logger logger;
 
     public EasyCommands() throws IOException {
-        this.config = new Config();
+        config = new Config();
         this.logger = new Logger(this);
-
-        millisStart = System.currentTimeMillis();
 
         loadIntents();
 
@@ -103,6 +101,8 @@ public class EasyCommands {
         jdaBuilder.disableCache(disabledCacheFlags);
 
         this.jda = jdaBuilder.build().awaitReady();
+
+        millisStart = System.currentTimeMillis();
 
         Logger.log(LogType.LISTENERS, jda.getRegisteredListeners().toString());
 
@@ -312,7 +312,7 @@ public class EasyCommands {
         Logger.log(LogType.OK, "EasyCommands MusicBot has been enabled successfully.");
     }
 
-    public Config getConfig() {
+    public static Config getConfig() {
         return config;
     }
 

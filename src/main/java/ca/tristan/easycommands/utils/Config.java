@@ -2,7 +2,9 @@ package ca.tristan.easycommands.utils;
 
 import com.mysql.cj.log.Log;
 
+import java.awt.*;
 import java.io.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +46,8 @@ public class Config {
         bufferedWriter.println(ConfigSettings.BOT_ROLE_ID.label);
         bufferedWriter.println("# Enables log to channel feature.");
         bufferedWriter.println(ConfigSettings.LOG_CHANNEL_ID.label);
+        bufferedWriter.println("# Music bot config.");
+        bufferedWriter.println(ConfigSettings.MUSIC_EMBED_COLOR.label + "255:255:255");
         bufferedWriter.flush();
         bufferedWriter.close();
         Logger.log(LogType.WARNING, "Launch stopped! Config file was not found so I created one. You can now configure the new created 'config.ini' file. | See https://github.com/FrostedCA/EasyCommands/blob/master/src/main/java/ca/tristan/easycommands/utils/Config.java for more settings.");
@@ -76,6 +80,7 @@ public class Config {
                     case MEMBER_ROLE_ID:
                     case BOT_ROLE_ID:
                     case LOG_CHANNEL_ID:
+                    case MUSIC_EMBED_COLOR:
                 }
             }
         }
@@ -148,5 +153,17 @@ public class Config {
         }
 
         return id;
+    }
+
+    public Color getMusicEmbedColor() {
+        Color out = null;
+        String[] rgbStrings = settingsValues.get(ConfigSettings.MUSIC_EMBED_COLOR).split(":");
+        int r = Integer.parseInt(rgbStrings[0]);
+        int g = Integer.parseInt(rgbStrings[1]);
+        int b = Integer.parseInt(rgbStrings[2]);
+        int rgbCode = r * g * b;
+        out = new Color(rgbCode);
+        System.out.println(Arrays.toString(rgbStrings));
+        return out;
     }
 }

@@ -31,30 +31,42 @@ Public library to make slash & prefix commands creation for JDA API easier.
 	).registerListeners( // Add your custom listeners/events here!
 		new ExampleListener1(),
 		new ExampleListener2()...
-	).buildJDA(); // Starts the bot!
+	).addGatewayIntents(/*leave empty if any*/)
+	.addEnabledCacheFlags(/*leave empty if any*/)
+	.buildJDA(); // Starts the bot!
     }
-```
-
-## Change the Gateway Intents or CacheFlags
-To change the intents or the enabled/disabled cache flags you can add those lines in your Main class under `EasyCommands easyCommands = new EasyCommands();`
-```
-easyCommands.addEnabledCacheFlags().add(YourFlags);
-easyCommands.addDisabledCacheFlags().add(YourFlags);
-easyCommands.addGatewayIntents().add(YourIntents);
 ```
 
 ## SlashExecutor
 #### How to create a custom slash command with EasyCommands
-- Create a new Java class. Ex: HelloCmd.java
-- Extend the class with SlashExecutor. Ex: `public class HelloCmd extends SlashExecutor`
-- You can now override all the necessesary functions. Ex: `getName(), getDescription(), execute(EventData data)`
-- When you are done creating your command class, you can register it inside of your Main class. Ex: `JDA jda = easyCommands.addExecutor(new HelloCmd()).buildJDA();`
-- If you still need help you can check out this YouTube video:
+Example slash executor class (Implement needed functions)
+**Includes more functions than shown in the example**
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=7IUPpeEWM_M
-" target="_blank"><img src="http://img.youtube.com/vi/7IUPpeEWM_M/0.jpg" 
-alt="youtube thumbnail" width="480" height="340" /></a>
+```java
+public class ExampleCmd extends SlashExecutor {
 
+    @Override
+    public String getName() {
+        return "hello";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Say Hello world!";
+    }
+    
+    @Override
+    public boolean isOwnerOnly() {
+        return false;
+    }
+    
+    @Override
+    public void execute(EventData data, MySQL mySQL) {
+    	data.reply("Hello world!", false).queue();
+    }
+
+}
+```
 or check out this simple command class: [NowPlayingCmd.java](https://github.com/FrostedCA/EasyCommands/blob/master/src/main/java/ca/tristan/easycommands/commands/music/NowPlayingCmd.java)
 
 ## PrefixExecutor
@@ -68,27 +80,25 @@ or check out this simple command class: [NowPlayingCmd.java](https://github.com/
 `easyCommands.getPrefixCommands().setPrefix("prefix");`
 Simply add this line inside your Main class under `EasyCommands easyCommands = new EasyCommands();`
 
+## Register an Executor
+In your main class when building the JDA ->
+
+`.addExecutor(new ExampleCmd())`
+
+`.addExecutor(new ExampleCmd1(), new ExampleCmd2(), new ExampleCmd3()...)` (You can also add multiple commands inside that function)
+
 ## Config
 #### How to use the Config class?
-Config example:
-```ini
-token=token
-use_mysql=true/false
-db_host=host ex: localhost
-db_port=port ex: 3306
-db_name=name //Database (Schema name)
-db_user=user
-db_password=password
-use_music_bot=true/false
-use_prefixcommands=true/false
-```
-To access those parameters inside of your code you need to use a `EasyCommands` instance.
+The Config file settings get generated automaticaly on creation.
+If you want to update the config file when a new version releases take a look at [ConfigSettings](https://github.com/FrostedCA/EasyCommands/blob/master/src/main/java/ca/tristan/easycommands/utils/ConfigSettings.java)
+
+To access the config settings inside of your code you need to use a `EasyCommands` instance can get the function `getConfig()`
 #### Main class with Config
 ```java
     public static void main(String[] args) throws InterruptedException, IOException {
        	EasyCommands easyCommands = new EasyCommands();
 	
-	easyCommands.getConfig(); <------
+	easyCommands.getConfig().get...; <------ !!!
 	
 	JDA jda = easyCommands.addExecutor( // Add your custom commands/executors here!
 		new HelpCmd(easyCommands),

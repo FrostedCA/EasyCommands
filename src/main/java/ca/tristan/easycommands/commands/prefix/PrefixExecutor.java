@@ -12,7 +12,7 @@ import java.util.List;
 
 public abstract class PrefixExecutor implements IExecutor {
 
-    public List<PrefixOptions> options = new ArrayList<>();
+    public List<PrefixOption> options = new ArrayList<>();
 
     @Override
     public String getName() {
@@ -29,7 +29,7 @@ public abstract class PrefixExecutor implements IExecutor {
         return null;
     }
 
-    public List<PrefixOptions> getOptions() {
+    public List<PrefixOption> getOptions() {
         return options;
     }
 

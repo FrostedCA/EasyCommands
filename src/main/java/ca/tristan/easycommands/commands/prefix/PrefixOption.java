@@ -1,14 +1,12 @@
 package ca.tristan.easycommands.commands.prefix;
 
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-
-public class PrefixOptions {
+public class PrefixOption {
 
     private String name;
     private String description;
     private String stringValue;
 
-    public PrefixOptions(String name, String description) {
+    public PrefixOption(String name, String description) {
         this.name = name;
         this.description = description;
     }

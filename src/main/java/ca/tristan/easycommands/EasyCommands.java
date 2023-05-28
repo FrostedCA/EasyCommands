@@ -277,7 +277,7 @@ public class EasyCommands {
     }
 
     /**
-     * Updates all executors/commands to Discord Guild.
+     * Updates all SlashExecutor to Discord Guild.
      */
     private void updateCommands() {
         List<CommandData> commands = new ArrayList<>();

@@ -29,8 +29,16 @@ public abstract class PrefixExecutor implements IExecutor {
         return null;
     }
 
-    public List<PrefixOption> getOptions() {
+    protected final List<PrefixOption> getOptions(){
         return options;
+    }
+
+    public String usage(){
+        StringBuilder usage = new StringBuilder("Usage: " + PrefixCommands.prefix + getName());
+        for(PrefixOption option : options){
+            usage.append(" <").append(option.getName().replace("<", "").replace(">", "")).append(">");
+        }
+        return usage.toString();
     }
 
     @Override
@@ -48,6 +56,6 @@ public abstract class PrefixExecutor implements IExecutor {
         return new ArrayList<>();
     }
 
-    public void execute(MessageReceivedEvent event, MySQL mySQL) { }
+    abstract public void execute(MessageReceivedEvent event, MySQL mySQL);
 
 }

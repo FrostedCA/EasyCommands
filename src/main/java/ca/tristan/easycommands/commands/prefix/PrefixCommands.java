@@ -2,18 +2,18 @@ package ca.tristan.easycommands.commands.prefix;
 
 import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.utils.LogType;
-import ca.tristan.easycommands.utils.Logger;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class PrefixCommands extends ListenerAdapter {
 
     private final EasyCommands easyCommands;
-    private String prefix = "!";
+    public static String prefix = "!";
 
     public PrefixCommands(EasyCommands easyCommands) {
         this.easyCommands = easyCommands;
@@ -24,7 +24,7 @@ public class PrefixCommands extends ListenerAdapter {
     }
 
     public void setPrefix(String prefix) {
-        this.prefix = prefix;
+        PrefixCommands.prefix = prefix;
     }
 
     @Override
@@ -44,12 +44,16 @@ public class PrefixCommands extends ListenerAdapter {
         if(easyCommands.getExecutors().containsKey(cmdName) && easyCommands.getExecutors().get(cmdName) instanceof PrefixExecutor) {
             PrefixExecutor executor = (PrefixExecutor) easyCommands.getExecutors().get(cmdName);
             String[] options = event.getMessage().getContentRaw().replace(prefix + cmdName + " ", "").split(" ");
-            if(options.length > 0 && executor.getOptions().size() > 0) {
-                for (int i = 0; i < options.length; i++) {
+
+            if(options.length != executor.getOptions().size()){
+                event.getChannel().sendMessage(executor.usage()).queue(message -> message.delete().queueAfter(10,TimeUnit.SECONDS));
+                return;
+            }
+            else{
+                for (int i = 0; i < executor.getOptions().size(); i++) {
                     executor.getOptions().get(i).setStringValue(options[i]);
                 }
             }
-
             easyCommands.getLogger().logBoth(LogType.PREFIXCMD, "'" + cmdName + "' has been triggered.", event.getMember());
             if(!executor.getAuthorizedChannels(easyCommands.jda).isEmpty() && !executor.getAuthorizedChannels(easyCommands.jda).contains(event.getChannel())) {
                 easyCommands.getLogger().logBoth(LogType.WARNING, "PrefixCommand: '" + cmdName + "' has been triggered but the channel it was executed in isn't authorized.", event.getMember());

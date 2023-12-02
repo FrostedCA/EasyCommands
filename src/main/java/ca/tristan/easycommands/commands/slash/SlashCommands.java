@@ -37,6 +37,7 @@ public class SlashCommands extends ListenerAdapter {
                 for (Role authorizedRole : executor.getAuthorizedRoles(easyCommands.jda)) {
                     if(Objects.requireNonNull(event.getMember()).getRoles().contains(authorizedRole)) {
                         executor.execute(new EventData(event), easyCommands.getMySQL());
+                        executor.execute(new EventData(event));
                         break;
                     }
                 }
@@ -44,6 +45,7 @@ public class SlashCommands extends ListenerAdapter {
             }
 
             executor.execute(new EventData(event), easyCommands.getMySQL());
+            executor.execute(new EventData(event));
         }
     }
 

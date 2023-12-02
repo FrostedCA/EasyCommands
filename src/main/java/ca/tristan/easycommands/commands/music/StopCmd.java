@@ -46,8 +46,7 @@ public class StopCmd extends SlashExecutor {
     }
 
     @Override
-    public void execute(EventData data, MySQL mySQL) {
-
+    public void execute(EventData data) {
         MusicEB musicEB = new MusicEB();
         if(!data.getMemberVoiceState().inAudioChannel()){
             musicEB.getBuilder().setDescription("You need to be in a voice channel for this command to work.");

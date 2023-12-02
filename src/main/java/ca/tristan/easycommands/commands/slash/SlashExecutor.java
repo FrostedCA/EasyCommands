@@ -55,4 +55,8 @@ public abstract class SlashExecutor implements IExecutor {
 
     }
 
+    public void execute(EventData event) {
+
+    }
+
 }

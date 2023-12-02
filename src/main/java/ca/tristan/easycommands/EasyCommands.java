@@ -67,12 +67,17 @@ public class EasyCommands {
 
         this.slashCommands = new SlashCommands(this);
 
-        if(this.config.getUsePrefixCommands()) {
+        if(config.getUsePrefixCommands()) {
             this.prefixCommands = new PrefixCommands(this);
             getGatewayIntents().add(GatewayIntent.MESSAGE_CONTENT);
         }
 
-        jdaBuilder = JDABuilder.create(this.config.getToken(), gatewayIntents);
+        if(config.getToken().isEmpty()) {
+            Logger.log(LogType.ERROR, "Token is invalid, please enter a valid token inside the config file.");
+            System.exit(-1);
+        }
+
+        jdaBuilder = JDABuilder.create(config.getToken(), gatewayIntents);
         jdaBuilder.addEventListeners(slashCommands);
     }
 
@@ -106,7 +111,12 @@ public class EasyCommands {
 
         Logger.log(LogType.LISTENERS, jda.getRegisteredListeners().toString());
 
-        if(this.config != null && this.config.getUseMysql()) {
+        if (config == null) {
+            Logger.log(LogType.ERROR, "Launch aborted. Couldn't find the config file.");
+            return jda;
+        }
+
+        if(config.getUseMysql()) {
             try {
                 this.mysqlInit();
             } catch (SQLException e) {
@@ -114,21 +124,21 @@ public class EasyCommands {
             }
         }
 
-        if(this.config != null && this.config.getUseMusicBot()) {
+        if(config.getUseMusicBot()) {
             enableMusicBot();
             this.jda.addEventListener(new AutoDisconnectEvent(), new ButtonEvents());
         }
 
-        if(this.config != null && this.config.getUsePrefixCommands()) {
+        if(config.getUsePrefixCommands()) {
             this.jda.addEventListener(prefixCommands);
         }
 
-        Role memberRole = !this.config.getMemberRoleID().isBlank() ? this.jda.getRoleById(this.config.getMemberRoleID()) : null;
-        Role botRole = !this.config.getBotRoleID().isBlank() ? this.jda.getRoleById(this.config.getBotRoleID()) : null;
+        Role memberRole = !config.getMemberRoleID().isBlank() ? this.jda.getRoleById(config.getMemberRoleID()) : null;
+        Role botRole = !config.getBotRoleID().isBlank() ? this.jda.getRoleById(config.getBotRoleID()) : null;
 
         this.jda.addEventListener(new AutoRoleEvents(memberRole, botRole));
 
-        logChannel = !this.config.getLogChannelID().isBlank() ? this.jda.getTextChannelById(this.config.getLogChannelID()) : null;
+        logChannel = !config.getLogChannelID().isBlank() ? this.jda.getTextChannelById(config.getLogChannelID()) : null;
 
 
         updateCommands();
@@ -179,7 +189,7 @@ public class EasyCommands {
      * Connects a MySQL database to EasyCommands.
      */
     private void mysqlInit() throws SQLException {
-        mySQL = new MySQL(this.config.getDB_Host(), this.config.getDB_Port(), this.config.getDB_Database(), this.config.getDB_User(), this.config.getDB_Password());
+        mySQL = new MySQL(config.getDB_Host(), config.getDB_Port(), config.getDB_Database(), config.getDB_User(), config.getDB_Password());
         try {
             mySQL.connect();
             Logger.log(LogType.OK, "Database connection successful.");

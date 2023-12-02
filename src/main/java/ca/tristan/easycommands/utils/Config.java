@@ -42,7 +42,7 @@ public class Config {
         writer.write("# IF YOU DON'T WANT TO USE A FEATURE JUST LEAVE THE CONFIG LINES VALUE **EMPTY OR REMOVE** THEM AND THEY WILL GET IGNORED.\n");
         writer.write("token=\n\n");
         writer.write("### Database Settings ###\n\n");
-        writer.write("# use_mysql=\n");
+        writer.write("use_mysql=false\n");
         writer.write("# db_host=\n");
         writer.write("# db_port=\n");
         writer.write("# db_name=\n");

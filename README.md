@@ -56,11 +56,6 @@ public class ExampleCmd extends SlashExecutor {
     }
     
     @Override
-    public boolean isOwnerOnly() {
-        return false;
-    }
-    
-    @Override
     public void execute(EventData data, MySQL mySQL) {
     	data.reply("Hello world!", false).queue();
     }

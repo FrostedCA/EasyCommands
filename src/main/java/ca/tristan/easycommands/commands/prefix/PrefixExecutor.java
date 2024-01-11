@@ -13,6 +13,9 @@ import java.util.List;
 public abstract class PrefixExecutor implements IExecutor {
 
     public List<PrefixOption> options = new ArrayList<>();
+    public List<String> aliases = new ArrayList<>();
+    public List<Role> authorizedRoles = new ArrayList<>();
+    public List<Channel> authorizedChannels = new ArrayList<>();
 
     @Override
     public String getName() {
@@ -41,19 +44,43 @@ public abstract class PrefixExecutor implements IExecutor {
         return usage.toString();
     }
 
+    /**
+     * You do not need to override this function anymore.
+     */
+    @Override
+    public List<Channel> getAuthorizedChannels() {
+        return authorizedChannels;
+    }
+
+    /**
+     * You do not need to override this function anymore.
+     */
+    @Override
+    public List<Role> getAuthorizedRoles() {
+        return authorizedRoles;
+    }
+
+    /**
+     * You do not need to override this function anymore. Please remove it if so, it will get removed soon.
+     * Replaced by: getAuthorizedChannels();
+     */
+    @Override
+    public List<Channel> getAuthorizedChannels(JDA jda) {
+        return getAuthorizedChannels();
+    }
+
+    /**
+     * You do not need to override this function anymore. Please remove it if so, it will get removed soon to.
+     * Replaced by: getAuthorizedRoles();
+     */
+    @Override
+    public List<Role> getAuthorizedRoles(JDA jda) {
+        return getAuthorizedRoles();
+    }
+
     @Override
     public boolean isOwnerOnly() {
         return false;
-    }
-
-    @Override
-    public List<Channel> getAuthorizedChannels(JDA jda) {
-        return new ArrayList<>();
-    }
-
-    @Override
-    public List<Role> getAuthorizedRoles(JDA jda) {
-        return new ArrayList<>();
     }
 
     abstract public void execute(MessageReceivedEvent event, MySQL mySQL);

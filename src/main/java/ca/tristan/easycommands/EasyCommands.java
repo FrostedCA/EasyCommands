@@ -1,7 +1,8 @@
 package ca.tristan.easycommands;
 
 import ca.tristan.easycommands.commands.IExecutor;
-import ca.tristan.easycommands.commands.defaults.SetMusicChannelCmd;
+import ca.tristan.easycommands.commands.defaults.SetLogChannel;
+import ca.tristan.easycommands.commands.defaults.SetMusicChannel;
 import ca.tristan.easycommands.commands.music.*;
 import ca.tristan.easycommands.commands.prefix.PrefixCommands;
 import ca.tristan.easycommands.commands.prefix.PrefixExecutor;
@@ -11,14 +12,11 @@ import ca.tristan.easycommands.database.MySQL;
 import ca.tristan.easycommands.events.AutoDisconnectEvent;
 import ca.tristan.easycommands.events.AutoRoleEvents;
 import ca.tristan.easycommands.events.ButtonEvents;
-import ca.tristan.easycommands.utils.Config;
-import ca.tristan.easycommands.utils.ConsoleColors;
-import ca.tristan.easycommands.utils.LogType;
-import ca.tristan.easycommands.utils.Logger;
+import ca.tristan.easycommands.guild.ECGuild;
+import ca.tristan.easycommands.utils.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -28,17 +26,27 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.*;
 import java.util.*;
 
 public class EasyCommands {
 
-    public JDA jda;
+    public static File rootDir;
+    public static File savedDir;
+    public static File configDir;
 
+    public JDA jda;
     private final JDABuilder jdaBuilder;
 
-    private MySQL mySQL;
+    /**
+     * Local Storage will store guild settings on local machine. MySQL in the 'cloud'.
+     * Depending on whether you use mysql or not in the config.
+     */
+    private static LocalStorage localStorage;
+    private MySQL mysql;
     
     private final Map<String, IExecutor> executorMap = new HashMap<>();
 
@@ -53,34 +61,49 @@ public class EasyCommands {
 
     private Long millisStart;
 
-    private static Config config;
-
     private TextChannel logChannel;
 
     private Logger logger;
 
-    public EasyCommands() throws IOException {
-        config = new Config();
+    private static ConfigFile configFile;
+
+    private static ECGuild[] ecGuilds;
+
+    /**
+     * Default EasyCommands Constructor. Use for general purpose, works right away.
+     */
+    public EasyCommands() throws IOException, URISyntaxException {
+
+        onShutdownHook();
+        setupDirs();
+
+        localStorage = new LocalStorage(savedDir);
+        configFile = new ConfigFile(configDir);
         this.logger = new Logger(this);
 
         loadIntents();
 
         this.slashCommands = new SlashCommands(this);
 
-        if(config.getUsePrefixCommands()) {
+        if(configFile.getUsePrefixCommands()) {
             this.prefixCommands = new PrefixCommands(this);
             getGatewayIntents().add(GatewayIntent.MESSAGE_CONTENT);
         }
 
-        if(config.getToken().isEmpty()) {
+        if (configFile.getToken().isEmpty()) {
             Logger.log(LogType.ERROR, "Token is invalid, please enter a valid token inside the config file.");
             System.exit(-1);
         }
 
-        jdaBuilder = JDABuilder.create(config.getToken(), gatewayIntents);
+        jdaBuilder = JDABuilder.create(configFile.getToken(), gatewayIntents);
         jdaBuilder.addEventListeners(slashCommands);
     }
 
+    /**
+     * Often used when hosting on a server which can't have a config file.
+     * @param token Bot Token
+     * @param usePrefixCommands Whether you wish to use prefix commands ex: !example;
+     */
     @Deprecated
     public EasyCommands(String token, boolean usePrefixCommands) throws IOException {
 
@@ -99,24 +122,30 @@ public class EasyCommands {
         jdaBuilder.addEventListeners(slashCommands);
     }
 
+    /**
+     * Use this function to start the bot
+     */
     public JDA buildJDA() throws InterruptedException {
 
         jdaBuilder.setEnabledIntents(gatewayIntents);
         jdaBuilder.enableCache(enabledCacheFlags);
         jdaBuilder.disableCache(disabledCacheFlags);
 
+        long millisStart1 = System.currentTimeMillis();
+
         this.jda = jdaBuilder.build().awaitReady();
 
         millisStart = System.currentTimeMillis();
 
+        Logger.log(LogType.NONE, "------- Loading EasyCommands -------");
         Logger.log(LogType.LISTENERS, jda.getRegisteredListeners().toString());
 
-        if (config == null) {
+        if (configFile == null) {
             Logger.log(LogType.ERROR, "Launch aborted. Couldn't find the config file.");
             return jda;
         }
 
-        if(config.getUseMysql()) {
+        if(configFile.getUseMySQL()) {
             try {
                 this.mysqlInit();
             } catch (SQLException e) {
@@ -124,26 +153,33 @@ public class EasyCommands {
             }
         }
 
-        if(config.getUseMusicBot()) {
+        if(configFile.getUseMusicBot()) {
             enableMusicBot();
             this.jda.addEventListener(new AutoDisconnectEvent(), new ButtonEvents());
         }
 
-        if(config.getUsePrefixCommands()) {
+        if(configFile.getUsePrefixCommands()) {
             this.jda.addEventListener(prefixCommands);
         }
 
-        Role memberRole = !config.getMemberRoleID().isBlank() ? this.jda.getRoleById(config.getMemberRoleID()) : null;
-        Role botRole = !config.getBotRoleID().isBlank() ? this.jda.getRoleById(config.getBotRoleID()) : null;
+        this.jda.addEventListener(new AutoRoleEvents());
 
-        this.jda.addEventListener(new AutoRoleEvents(memberRole, botRole));
-
-        logChannel = !config.getLogChannelID().isBlank() ? this.jda.getTextChannelById(config.getLogChannelID()) : null;
-
+        logChannel = !configFile.getLogChannelID().isBlank() ? this.jda.getTextChannelById(configFile.getLogChannelID()) : null;
 
         updateCommands();
         logCurrentExecutors();
-        Logger.log(LogType.OK, "EasyCommands finished loading in " + ConsoleColors.GREEN_BOLD + (System.currentTimeMillis() - millisStart) + "ms" + ConsoleColors.GREEN + ".");
+
+        /*
+         * Loads the properties for a guild. (Log channel id, auto roles, etc.);
+         */
+        ecGuilds = new ECGuild[jda.getGuilds().size()];
+        for (int index = 0; index < jda.getGuilds().size(); index++) {
+            Guild jdaGuild = jda.getGuilds().get(index);
+            ECGuild guild = new ECGuild(jdaGuild.getId());
+            ecGuilds[index] = guild;
+        }
+
+        Logger.log(LogType.OK, "EasyCommands finished loading in " + ConsoleColors.GREEN_BOLD + (System.currentTimeMillis() - millisStart) + "ms" + ConsoleColors.GREEN + "\nTotal: " + ConsoleColors.GREEN_BOLD + (System.currentTimeMillis() - millisStart1) + "ms" + ConsoleColors.GREEN + ".");
         return jda;
     }
 
@@ -189,25 +225,24 @@ public class EasyCommands {
      * Connects a MySQL database to EasyCommands.
      */
     private void mysqlInit() throws SQLException {
-        mySQL = new MySQL(config.getDB_Host(), config.getDB_Port(), config.getDB_Database(), config.getDB_User(), config.getDB_Password());
+        //mySQL = new MySQL(config.getDB_Host(), config.getDB_Port(), config.getDB_Database(), config.getDB_User(), config.getDB_Password());
         try {
-            mySQL.connect();
+            mysql.connect();
             Logger.log(LogType.OK, "Database connection successful.");
         } catch (SQLException e) {
-            e.printStackTrace();
             Logger.log(LogType.ERROR, "Error while trying to connect to database. Try reloading maven project.");
             return;
         }
 
-        if(mySQL.checkConnection(0)) {
-            DatabaseMetaData dbm = mySQL.getConnection().getMetaData();
+        if(mysql.checkConnection(0)) {
+            DatabaseMetaData dbm = mysql.getConnection().getMetaData();
             ResultSet tables = dbm.getTables(null, null, "guilds", null);
             if(tables.next()) {
                 loadMySQLGuilds();
                 return;
             }
             String table = "CREATE TABLE guilds ( guild_id varchar(255) primary key, music_channel varchar(255) )";
-            PreparedStatement preparedStatement = mySQL.getConnection().prepareStatement(table);
+            PreparedStatement preparedStatement = mysql.getConnection().prepareStatement(table);
             preparedStatement.execute();
             loadMySQLGuilds();
         }
@@ -219,7 +254,7 @@ public class EasyCommands {
             return;
         }
 
-        PreparedStatement preparedStatement = mySQL.getConnection().prepareStatement("SELECT * FROM guilds");
+        PreparedStatement preparedStatement = mysql.getConnection().prepareStatement("SELECT * FROM guilds");
         ResultSet rs = preparedStatement.executeQuery();
         while(rs.next()) {
             if((rs.getString(1) == null || rs.getString(1).isEmpty()) || (rs.getString(2) == null || rs.getString(2).isEmpty())) {
@@ -233,7 +268,7 @@ public class EasyCommands {
     }
 
     public MySQL getMySQL() {
-        return mySQL;
+        return mysql;
     }
 
     public Map<String, IExecutor> getExecutors() { return executorMap; }
@@ -275,14 +310,17 @@ public class EasyCommands {
         for (Command command : commands) {
             Logger.logNoType("/" + command.getName() + ConsoleColors.RESET + ":" + ConsoleColors.CYAN + command.getId());
         }
-        Logger.logNoType(ConsoleColors.BLUE_BOLD + "- [Prefix]");
-        getExecutors().forEach((s, iExecutor) -> {
-            if(iExecutor instanceof PrefixExecutor) {
-                if(!iExecutor.getAliases().contains(s)) {
-                    Logger.logNoType(getPrefixCommands().getPrefix() + s);
+        if (configFile.getUsePrefixCommands()) {
+            Logger.logNoType(ConsoleColors.BLUE_BOLD + "- [Prefix]");
+            getExecutors().forEach((s, iExecutor) -> {
+                if(iExecutor instanceof PrefixExecutor) {
+                    if(!iExecutor.getAliases().contains(s)) {
+                        Logger.logNoType(getPrefixCommands().getPrefix() + s);
+                    }
                 }
-            }
-        });
+            });
+        }
+
 
     }
 
@@ -294,8 +332,12 @@ public class EasyCommands {
         getExecutors().forEach((name, executor) -> {
             if(executor instanceof SlashExecutor) {
                 SlashExecutor executor1 = (SlashExecutor) executor;
+                executor1.updateOptions();
                 commands.add(Commands.slash(name, executor1.getDescription()).addOptions(executor1.getOptions()));
             }
+            executor.updateAliases();
+            executor.updateAuthorizedChannels(jda);
+            executor.updateAuthorizedRoles(jda);
         });
         jda.updateCommands().addCommands(commands).queue();
     }
@@ -313,17 +355,17 @@ public class EasyCommands {
         return this;
     }
 
-    public Map<Guild, Channel> getGuildsMusicChannel() {
-        return guildsMusicChannel;
-    }
-
     private void enableMusicBot() {
-        this.addExecutor(new PlayCmd(this), new StopCmd(this), new NowPlayingCmd(this), new SkipCmd(this), new PauseCmd(this), new LyricsCmd(this), new SetMusicChannelCmd());
+        this.addExecutor(new PlayCmd(this), new StopCmd(this), new NowPlayingCmd(this), new SkipCmd(this), new PauseCmd(this), new LyricsCmd(this), new SetMusicChannel());
         Logger.log(LogType.OK, "EasyCommands MusicBot has been enabled successfully.");
     }
 
-    public static Config getConfig() {
-        return config;
+    public static ConfigFile getConfig() {
+        return configFile;
+    }
+
+    public static LocalStorage getLocalStorage() {
+        return localStorage;
     }
 
     public JDA getJDA() {
@@ -337,4 +379,33 @@ public class EasyCommands {
     public Logger getLogger() {
         return logger;
     }
+
+    private void onShutdownHook() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                configFile.writeConfig();
+                Logger.log(LogType.OK, "Saved config");
+
+                for (ECGuild ecGuild : ecGuilds) {
+                    ecGuild.saveProperties();
+                }
+                Logger.log(LogType.OK, "Guild properties have been saved for all guilds.");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            Logger.log(LogType.NONE, "Shutting down");
+        }));
+    }
+
+    private void setupDirs() throws URISyntaxException {
+        rootDir = new File(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).toURI());
+        savedDir = new File(rootDir, "Saved");
+        configDir = new File(savedDir + File.separator + "Config");
+    }
+
+    public static ECGuild[] getEcGuilds() {
+        return ecGuilds;
+    }
+
 }

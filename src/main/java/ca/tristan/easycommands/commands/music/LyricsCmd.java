@@ -1,5 +1,6 @@
 package ca.tristan.easycommands.commands.music;
 
+import ca.tristan.easycommands.EC;
 import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.EventData;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
@@ -11,12 +12,12 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import core.GLA;
 import genius.SongSearch;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.channel.Channel;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * Last update: v0.8
+ */
 public class LyricsCmd extends SlashExecutor {
 
     public final EasyCommands easyCommands;
@@ -36,23 +37,16 @@ public class LyricsCmd extends SlashExecutor {
     }
 
     @Override
-    public List<Channel> getAuthorizedChannels(JDA jda) {
-        List<Channel> channels = new ArrayList<>();
-        if(easyCommands.getGuildsMusicChannel().isEmpty()) {
-            return channels;
-        }
-        easyCommands.getGuildsMusicChannel().forEach((guild, channel) -> {
-            channels.add(channel);
-        });
-        return channels;
-    }
-
-    @Override
     public void execute(EventData data, MySQL mySQL) {
         final GuildMusicManager musicManager = PlayerManager.getInstance().getMusicManager(data.getGuild());
         final AudioPlayer audioPlayer = musicManager.audioPlayer;
 
         MusicEB musicEB = new MusicEB();
+
+        if(!EC.canSendMusicCommand(data.getGuild().getId(), data.getChannel().getId())) {
+            data.getEvent().reply("You can't use this command in this channel.").setEphemeral(true).queue();
+            return;
+        }
 
         if(audioPlayer.getPlayingTrack() == null){
             musicEB.getBuilder().setDescription("There is no music currently playing.");
@@ -78,7 +72,6 @@ public class LyricsCmd extends SlashExecutor {
         } catch (IOException e) {
             musicEB.getBuilder().setDescription("Sorry, I haven't found any lyrics for that song.");
             data.reply(musicEB.getBuilder().build(), true).queue();
-            e.printStackTrace();
         }
     }
 }

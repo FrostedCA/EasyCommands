@@ -3,6 +3,7 @@ package ca.tristan.testbot;
 import ca.tristan.easycommands.commands.prefix.PrefixExecutor;
 import ca.tristan.easycommands.commands.prefix.PrefixOption;
 import ca.tristan.easycommands.database.MySQL;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
@@ -19,9 +20,30 @@ public class ExampleCommand extends PrefixExecutor {
         return "example";
     }
 
+    /**
+     * Override this function to add command aliases;
+     */
     @Override
-    public List<String> getAliases() {
-        return List.of("s");
+    public void updateAliases() {
+
+    }
+
+    /**
+     * Override this function to add your specific authorized roles ex:
+     * authorizedRoles.add(jda.getGuildById().getRoleById("myRoleID"));
+     */
+    @Override
+    public void updateAuthorizedRoles(JDA jda) {
+
+    }
+
+    /**
+     * Override this function to add your specific authorized channels ex:
+     * authorizedChannels.add(jda.getChannelByID("myChannelID"));
+     */
+    @Override
+    public void updateAuthorizedChannels(JDA jda) {
+
     }
 
     @Override

@@ -28,11 +28,6 @@ public class HelpCmd extends SlashExecutor {
     }
 
     @Override
-    public boolean isOwnerOnly() {
-        return false;
-    }
-
-    @Override
     public void execute(EventData data, MySQL mySQL) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle("Help - " + data.getGuild().getName());

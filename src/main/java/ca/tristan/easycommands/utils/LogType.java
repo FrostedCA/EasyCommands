@@ -9,6 +9,7 @@ public enum LogType {
     SLASHCMD,
     EXECUTORS,
     LISTENERS,
+    NONE,
     ;
 
 }

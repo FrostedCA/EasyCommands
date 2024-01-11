@@ -50,6 +50,8 @@ public class Logger {
             case ERROR:
                 line = time + ConsoleColors.RED_BOLD + type + ": " + ConsoleColors.RED + log + ConsoleColors.RESET + (stacktrace != null ? " Stacktrace: " + stacktrace : "");
                 break;
+            case NONE:
+                line = log;
         }
 
         System.out.println(line);

@@ -1,5 +1,6 @@
 package ca.tristan.easycommands.commands.music;
 
+import ca.tristan.easycommands.EC;
 import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.commands.EventData;
@@ -42,18 +43,6 @@ public class PlayCmd extends SlashExecutor {
     }
 
     @Override
-    public List<Channel> getAuthorizedChannels(JDA jda) {
-        List<Channel> channels = new ArrayList<>();
-        if(easyCommands.getGuildsMusicChannel().isEmpty()) {
-            return channels;
-        }
-        easyCommands.getGuildsMusicChannel().forEach((guild, channel) -> {
-            channels.add(channel);
-        });
-        return channels;
-    }
-
-    @Override
     public void execute(EventData data, MySQL mySQL) {
         if(data.getCommand().getOptions().isEmpty()) {
             data.getEvent().reply("You need to specify a music. Usage: '/play <music>'").setEphemeral(true).queue();
@@ -62,6 +51,11 @@ public class PlayCmd extends SlashExecutor {
 
         if(!data.getMemberVoiceState().inAudioChannel()) {
             data.getEvent().reply("You must be in an audio channel to perform that command.").setEphemeral(true).queue();
+            return;
+        }
+
+        if(!EC.canSendMusicCommand(data.getGuild().getId(), data.getChannel().getId())) {
+            data.getEvent().reply("You can't use this command in this channel.").setEphemeral(true).queue();
             return;
         }
 

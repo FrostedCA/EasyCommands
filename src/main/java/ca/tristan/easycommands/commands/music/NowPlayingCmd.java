@@ -1,5 +1,6 @@
 package ca.tristan.easycommands.commands.music;
 
+import ca.tristan.easycommands.EC;
 import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.commands.EventData;
@@ -32,21 +33,14 @@ public class NowPlayingCmd extends SlashExecutor {
     }
 
     @Override
-    public List<Channel> getAuthorizedChannels(JDA jda) {
-        List<Channel> channels = new ArrayList<>();
-        if(easyCommands.getGuildsMusicChannel().isEmpty()) {
-            return channels;
-        }
-        easyCommands.getGuildsMusicChannel().forEach((guild, channel) -> {
-            channels.add(channel);
-        });
-        return channels;
-    }
-
-    @Override
     public void execute(EventData data, MySQL mySQL) {
         final GuildMusicManager musicManager = PlayerManager.getInstance().getMusicManager(data.getGuild());
         final AudioPlayer audioPlayer = musicManager.audioPlayer;
+
+        if(!EC.canSendMusicCommand(data.getGuild().getId(), data.getChannel().getId())) {
+            data.getEvent().reply("You can't use this command in this channel.").setEphemeral(true).queue();
+            return;
+        }
 
         if(audioPlayer.getPlayingTrack() == null){
             data.reply("There is currently no music playing.", true).queue();

@@ -1,5 +1,6 @@
 package ca.tristan.easycommands.commands.music;
 
+import ca.tristan.easycommands.EC;
 import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.commands.EventData;
@@ -35,23 +36,16 @@ public class SkipCmd extends SlashExecutor {
     }
 
     @Override
-    public List<Channel> getAuthorizedChannels(JDA jda) {
-        List<Channel> channels = new ArrayList<>();
-        if(easyCommands.getGuildsMusicChannel().isEmpty()) {
-            return channels;
-        }
-        easyCommands.getGuildsMusicChannel().forEach((guild, channel) -> {
-            channels.add(channel);
-        });
-        return channels;
-    }
-
-    @Override
     public void execute(EventData data, MySQL mySQL) {
         final Member self = data.getSelfMember();
         final GuildVoiceState selfVoiceState = self.getVoiceState();
 
         MusicEB musicEB = new MusicEB();
+
+        if(!EC.canSendMusicCommand(data.getGuild().getId(), data.getChannel().getId())) {
+            data.getEvent().reply("You can't use this command in this channel.").setEphemeral(true).queue();
+            return;
+        }
 
         if(selfVoiceState == null || !selfVoiceState.inAudioChannel()){
             musicEB.getBuilder().setDescription("I need to be in a voice channel for this to work.");

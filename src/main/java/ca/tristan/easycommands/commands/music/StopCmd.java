@@ -1,5 +1,6 @@
 package ca.tristan.easycommands.commands.music;
 
+import ca.tristan.easycommands.EC;
 import ca.tristan.easycommands.EasyCommands;
 import ca.tristan.easycommands.commands.slash.SlashExecutor;
 import ca.tristan.easycommands.commands.EventData;
@@ -34,18 +35,6 @@ public class StopCmd extends SlashExecutor {
     }
 
     @Override
-    public List<Channel> getAuthorizedChannels(JDA jda) {
-        List<Channel> channels = new ArrayList<>();
-        if(easyCommands.getGuildsMusicChannel().isEmpty()) {
-            return channels;
-        }
-        easyCommands.getGuildsMusicChannel().forEach((guild, channel) -> {
-            channels.add(channel);
-        });
-        return channels;
-    }
-
-    @Override
     public void execute(EventData data) {
         MusicEB musicEB = new MusicEB();
         if(!data.getMemberVoiceState().inAudioChannel()){
@@ -57,6 +46,11 @@ public class StopCmd extends SlashExecutor {
         if(!data.getSelfVoiceState().inAudioChannel()){
             musicEB.getBuilder().setDescription("I need to be in a voice channel or I need to be playing music for this command to work.");
             data.reply(musicEB.getBuilder().build(), true).queue();
+            return;
+        }
+
+        if(!EC.canSendMusicCommand(data.getGuild().getId(), data.getChannel().getId())) {
+            data.getEvent().reply("You can't use this command in this channel.").setEphemeral(true).queue();
             return;
         }
 

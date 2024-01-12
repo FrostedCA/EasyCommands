@@ -40,14 +40,16 @@ public class HelpCmd extends SlashExecutor {
                 }
             }
         });
-        builder.addField("Prefix Commands", "--------------------", false);
-        easyCommands.getExecutors().forEach((name, commandExecutor) -> {
-            if(commandExecutor instanceof PrefixExecutor && !commandExecutor.isOwnerOnly() && !commandExecutor.getName().equals("help") && (commandExecutor.getDescription() != null || !commandExecutor.getDescription().isEmpty())) {
-                if(!commandExecutor.getAliases().contains(name)) {
-                    builder.addField(easyCommands.getPrefixCommands().getPrefix() + name, commandExecutor.getDescription(), false);
+        if (EasyCommands.getConfig().getUsePrefixCommands()) {
+            builder.addField("Prefix Commands", "--------------------", false);
+            easyCommands.getExecutors().forEach((name, commandExecutor) -> {
+                if(commandExecutor instanceof PrefixExecutor && !commandExecutor.isOwnerOnly() && !commandExecutor.getName().equals("help") && (commandExecutor.getDescription() != null || !commandExecutor.getDescription().isEmpty())) {
+                    if(!commandExecutor.getAliases().contains(name)) {
+                        builder.addField(easyCommands.getPrefixCommands().getPrefix() + name, commandExecutor.getDescription(), false);
+                    }
                 }
-            }
-        });
+            });
+        }
         if(builder.getFields().isEmpty()) {
             builder.setDescription("There's no command to show for this server.");
         }else {

@@ -72,18 +72,20 @@ public class Logger {
     public void logBoth(LogType type, String log, Member commandSender) {
         log(type, log);
 
-        if(easyCommands.getLogChannel() == null) {
+        /*if(easyCommands.getLogChannel() == null) {
             return;
-        }
+        }*/
 
-        EmbedBuilder builder = new EmbedBuilder();
+        return;
+
+        /*EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle("Logs");
         if(commandSender != null) {
             builder.addField("Triggered by:", commandSender.getAsMention(), false);
         }
         builder.addField("LogType: " + type.toString(), "Log: " + log, false);
         builder.setFooter(Calendar.getInstance().getTime().toString());
-        easyCommands.getLogChannel().sendMessageEmbeds(builder.build()).queue();
+        easyCommands.getLogChannel().sendMessageEmbeds(builder.build()).queue();*/
     }
 
 }

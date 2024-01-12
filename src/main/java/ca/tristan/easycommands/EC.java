@@ -18,7 +18,6 @@ public class EC {
         }
 
         ECGuild guild = opt.get();
-
         guild.guildProperties.put(key.name(), value);
         guild.saveProperties();
         return true;
@@ -41,5 +40,6 @@ public class EC {
 
         return false;
     }
+
 
 }

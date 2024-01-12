@@ -123,16 +123,24 @@ public class ConfigFile {
         return Boolean.parseBoolean(configProperties.get(ConfigOptions.USE_MYSQL.name()));
     }
 
-    public String getMemberRoleID() {
-        return configProperties.get(ConfigOptions.MEMBER_ROLE_ID.name());
+    public String getDBHost() {
+        return configProperties.get(ConfigOptions.DB_HOST.name());
     }
 
-    public String getBotRoleID() {
-        return configProperties.get(ConfigOptions.BOT_ROLE_ID.name());
+    public int getDBPort() {
+        return Integer.parseInt(configProperties.get(ConfigOptions.DB_PORT.name()));
     }
 
-    public String getLogChannelID() {
-        return configProperties.get(ConfigOptions.LOG_CHANNEL_ID.name());
+    public String getDBName() {
+        return configProperties.get(ConfigOptions.DB_NAME.name());
+    }
+
+    public String getDBUser() {
+        return configProperties.get(ConfigOptions.DB_USER.name());
+    }
+
+    public String getDBPassword() {
+        return configProperties.get(ConfigOptions.DB_PASSWORD.name());
     }
 
     public Color getMusicEmbedColor() {

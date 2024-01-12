@@ -1,7 +1,6 @@
 package ca.tristan.easycommands;
 
 import ca.tristan.easycommands.commands.IExecutor;
-import ca.tristan.easycommands.commands.defaults.SetLogChannel;
 import ca.tristan.easycommands.commands.defaults.SetMusicChannel;
 import ca.tristan.easycommands.commands.music.*;
 import ca.tristan.easycommands.commands.prefix.PrefixCommands;
@@ -18,7 +17,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.Channel;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -46,7 +44,7 @@ public class EasyCommands {
      * Depending on whether you use mysql or not in the config.
      */
     private static LocalStorage localStorage;
-    private MySQL mysql;
+    private static MySQL mysql;
     
     private final Map<String, IExecutor> executorMap = new HashMap<>();
 
@@ -60,8 +58,6 @@ public class EasyCommands {
     private final Map<Guild, Channel> guildsMusicChannel = new HashMap<>();
 
     private Long millisStart;
-
-    private TextChannel logChannel;
 
     private Logger logger;
 
@@ -151,6 +147,8 @@ public class EasyCommands {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
+        } else {
+            Logger.log(LogType.OK, "Not using MySQL -> Saving properties locally.");
         }
 
         if(configFile.getUseMusicBot()) {
@@ -163,8 +161,6 @@ public class EasyCommands {
         }
 
         this.jda.addEventListener(new AutoRoleEvents());
-
-        logChannel = !configFile.getLogChannelID().isBlank() ? this.jda.getTextChannelById(configFile.getLogChannelID()) : null;
 
         updateCommands();
         logCurrentExecutors();
@@ -225,7 +221,7 @@ public class EasyCommands {
      * Connects a MySQL database to EasyCommands.
      */
     private void mysqlInit() throws SQLException {
-        //mySQL = new MySQL(config.getDB_Host(), config.getDB_Port(), config.getDB_Database(), config.getDB_User(), config.getDB_Password());
+        mysql = new MySQL(configFile.getDBHost(), configFile.getDBPort(), configFile.getDBName(), configFile.getDBUser(), configFile.getDBPassword());
         try {
             mysql.connect();
             Logger.log(LogType.OK, "Database connection successful.");
@@ -236,15 +232,17 @@ public class EasyCommands {
 
         if(mysql.checkConnection(0)) {
             DatabaseMetaData dbm = mysql.getConnection().getMetaData();
-            ResultSet tables = dbm.getTables(null, null, "guilds", null);
+            ResultSet tables = dbm.getTables(null, null, "guildProperties", null);
             if(tables.next()) {
-                loadMySQLGuilds();
+                // Means that the table is valid
+                // Return the code here to let the bot start and register the guilds using mysql; See more inside: ECGuild.java
                 return;
             }
-            String table = "CREATE TABLE guilds ( guild_id varchar(255) primary key, music_channel varchar(255) )";
+
+            // Create table when missing
+            String table = "CREATE TABLE guildProperties ( guildId varchar(255) primary key, member_role varchar(255), bot_role varchar(255), music_channel varchar(255), log_channel varchar(255) )";
             PreparedStatement preparedStatement = mysql.getConnection().prepareStatement(table);
             preparedStatement.execute();
-            loadMySQLGuilds();
         }
     }
 
@@ -254,7 +252,7 @@ public class EasyCommands {
             return;
         }
 
-        PreparedStatement preparedStatement = mysql.getConnection().prepareStatement("SELECT * FROM guilds");
+        PreparedStatement preparedStatement = mysql.getConnection().prepareStatement("SELECT * FROM guildProperties");
         ResultSet rs = preparedStatement.executeQuery();
         while(rs.next()) {
             if((rs.getString(1) == null || rs.getString(1).isEmpty()) || (rs.getString(2) == null || rs.getString(2).isEmpty())) {
@@ -267,7 +265,7 @@ public class EasyCommands {
         }
     }
 
-    public MySQL getMySQL() {
+    public static MySQL getMySQL() {
         return mysql;
     }
 
@@ -370,10 +368,6 @@ public class EasyCommands {
 
     public JDA getJDA() {
         return jda;
-    }
-
-    public TextChannel getLogChannel() {
-        return logChannel;
     }
 
     public Logger getLogger() {

@@ -11,9 +11,6 @@ enum ConfigOptions {
     DB_PASSWORD(""),
     USE_MUSIC_BOT("true"),
     USE_PREFIXCOMMANDS("false"),
-    MEMBER_ROLE_ID(""),
-    BOT_ROLE_ID(""),
-    LOG_CHANNEL_ID(""),
     MUSIC_EMBED_COLOR("255:255:255");
 
     private String value;

@@ -225,16 +225,7 @@ public class EasyCommands {
         }
 
         try {
-            if(mysql.checkConnection(0)) {
-                DatabaseMetaData dbm = mysql.getConnection().getMetaData();
-                ResultSet tables = dbm.getTables(null, null, "guildproperties", null);
-                if(tables.next()) {
-                    // Means that the table is valid
-                    // Return the code here to let the bot start and register the guilds using mysql; See more inside: ECGuild.java
-                    Logger.log(LogType.OK, "Database GuildProperties table is valid.");
-                    return;
-                }
-
+            if (!mysql.tableExists("guildproperties")) {
                 // Create table when missing
                 String table = "CREATE TABLE guildproperties ( guildId varchar(255) primary key, member_role varchar(255), bot_role varchar(255), music_channel varchar(255), log_channel varchar(255) )";
                 PreparedStatement preparedStatement = mysql.getConnection().prepareStatement(table);

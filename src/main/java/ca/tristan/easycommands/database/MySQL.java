@@ -2,6 +2,7 @@ package ca.tristan.easycommands.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class MySQL {
@@ -50,6 +51,20 @@ public class MySQL {
         } catch (SQLException e) {
             return false;
         }
+    }
+
+    public boolean tableExists(String tableName) throws SQLException {
+        boolean tExists = false;
+        try (ResultSet rs = connection.getMetaData().getTables(getDatabase(), null, tableName, null)) {
+            while (rs.next()) {
+                String tName = rs.getString("TABLE_NAME");
+                if (tName != null && tName.equals(tableName)) {
+                    tExists = true;
+                    break;
+                }
+            }
+        }
+        return tExists;
     }
 
 }

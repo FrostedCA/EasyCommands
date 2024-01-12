@@ -142,18 +142,13 @@ public class EasyCommands {
         }
 
         if(configFile.getUseMySQL()) {
-            try {
-                this.mysqlInit();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+            this.mysqlInit();
         } else {
             Logger.log(LogType.OK, "Not using MySQL -> Saving properties locally.");
         }
 
         if(configFile.getUseMusicBot()) {
             enableMusicBot();
-            this.jda.addEventListener(new AutoDisconnectEvent(), new ButtonEvents());
         }
 
         if(configFile.getUsePrefixCommands()) {
@@ -161,12 +156,11 @@ public class EasyCommands {
         }
 
         this.jda.addEventListener(new AutoRoleEvents());
-
         updateCommands();
         logCurrentExecutors();
 
         /*
-         * Loads the properties for a guild. (Log channel id, auto roles, etc.);
+         * Loads the properties for each guild. (Log channel id, auto roles, etc.)
          */
         ecGuilds = new ECGuild[jda.getGuilds().size()];
         for (int index = 0; index < jda.getGuilds().size(); index++) {
@@ -220,7 +214,7 @@ public class EasyCommands {
     /**
      * Connects a MySQL database to EasyCommands.
      */
-    private void mysqlInit() throws SQLException {
+    private void mysqlInit() {
         mysql = new MySQL(configFile.getDBHost(), configFile.getDBPort(), configFile.getDBName(), configFile.getDBUser(), configFile.getDBPassword());
         try {
             mysql.connect();
@@ -230,39 +224,28 @@ public class EasyCommands {
             return;
         }
 
-        if(mysql.checkConnection(0)) {
-            DatabaseMetaData dbm = mysql.getConnection().getMetaData();
-            ResultSet tables = dbm.getTables(null, null, "guildProperties", null);
-            if(tables.next()) {
-                // Means that the table is valid
-                // Return the code here to let the bot start and register the guilds using mysql; See more inside: ECGuild.java
-                return;
+        try {
+            if(mysql.checkConnection(0)) {
+                DatabaseMetaData dbm = mysql.getConnection().getMetaData();
+                ResultSet tables = dbm.getTables(null, null, "guildproperties", null);
+                if(tables.next()) {
+                    // Means that the table is valid
+                    // Return the code here to let the bot start and register the guilds using mysql; See more inside: ECGuild.java
+                    Logger.log(LogType.OK, "Database GuildProperties table is valid.");
+                    return;
+                }
+
+                // Create table when missing
+                String table = "CREATE TABLE guildproperties ( guildId varchar(255) primary key, member_role varchar(255), bot_role varchar(255), music_channel varchar(255), log_channel varchar(255) )";
+                PreparedStatement preparedStatement = mysql.getConnection().prepareStatement(table);
+                preparedStatement.execute();
+                Logger.log(LogType.OK, "Database GuildProperties table has been created.");
             }
-
-            // Create table when missing
-            String table = "CREATE TABLE guildProperties ( guildId varchar(255) primary key, member_role varchar(255), bot_role varchar(255), music_channel varchar(255), log_channel varchar(255) )";
-            PreparedStatement preparedStatement = mysql.getConnection().prepareStatement(table);
-            preparedStatement.execute();
-        }
-    }
-
-    private void loadMySQLGuilds() throws SQLException {
-
-        if(jda.getGuilds().isEmpty()) {
-            return;
+        } catch (SQLException e) {
+            Logger.log(LogType.ERROR, "Database Table couldn't be created.");
         }
 
-        PreparedStatement preparedStatement = mysql.getConnection().prepareStatement("SELECT * FROM guildProperties");
-        ResultSet rs = preparedStatement.executeQuery();
-        while(rs.next()) {
-            if((rs.getString(1) == null || rs.getString(1).isEmpty()) || (rs.getString(2) == null || rs.getString(2).isEmpty())) {
-                continue;
-            }
-            if(jda.getGuilds().contains(jda.getGuildById(rs.getString(1)))) {
-                Guild guild = jda.getGuildById(rs.getString(1));
-                guildsMusicChannel.put(guild, guild.getTextChannelById(rs.getString(2)));
-            }
-        }
+
     }
 
     public static MySQL getMySQL() {
@@ -355,6 +338,7 @@ public class EasyCommands {
 
     private void enableMusicBot() {
         this.addExecutor(new PlayCmd(this), new StopCmd(this), new NowPlayingCmd(this), new SkipCmd(this), new PauseCmd(this), new LyricsCmd(this), new SetMusicChannel());
+        this.jda.addEventListener(new AutoDisconnectEvent(), new ButtonEvents());
         Logger.log(LogType.OK, "EasyCommands MusicBot has been enabled successfully.");
     }
 

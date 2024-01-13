@@ -28,14 +28,14 @@ public class AutoRoleEvents extends ListenerAdapter {
         ECGuild guild = opt.get();
 
         if (event.getUser().isBot()) {
-            if (guild.guildProperties.containsKey(GuildOptions.BOT_ROLE.name())) {
+            if (guild.guildProperties.containsKey(GuildOptions.BOT_ROLE.name()) && !guild.guildProperties.getProperty(GuildOptions.BOT_ROLE.name()).isEmpty()) {
                 event.getGuild().addRoleToMember(event.getMember(), Objects.requireNonNull(event.getGuild().getRoleById(guild.guildProperties.getProperty(GuildOptions.BOT_ROLE.name())))).queue();
                 Logger.log(LogType.OK, "Auto bot role has been added to new bot.");
             }
             return;
         }
 
-        if (guild.guildProperties.containsKey(GuildOptions.MEMBER_ROLE.name())) {
+        if (guild.guildProperties.containsKey(GuildOptions.MEMBER_ROLE.name()) && !guild.guildProperties.getProperty(GuildOptions.MEMBER_ROLE.name()).isEmpty()) {
             event.getGuild().addRoleToMember(event.getMember(), Objects.requireNonNull(event.getGuild().getRoleById(guild.guildProperties.getProperty(GuildOptions.MEMBER_ROLE.name())))).queue();
             Logger.log(LogType.OK, "Auto member role has been added to new member.");
         } else {

@@ -1,6 +1,9 @@
 package ca.tristan.easycommands;
 
 import ca.tristan.easycommands.commands.IExecutor;
+import ca.tristan.easycommands.commands.defaults.SetAutoBotRole;
+import ca.tristan.easycommands.commands.defaults.SetAutoMemberRole;
+import ca.tristan.easycommands.commands.defaults.SetLogChannel;
 import ca.tristan.easycommands.commands.defaults.SetMusicChannel;
 import ca.tristan.easycommands.commands.music.*;
 import ca.tristan.easycommands.commands.prefix.PrefixCommands;
@@ -11,12 +14,12 @@ import ca.tristan.easycommands.database.MySQL;
 import ca.tristan.easycommands.events.AutoDisconnectEvent;
 import ca.tristan.easycommands.events.AutoRoleEvents;
 import ca.tristan.easycommands.events.ButtonEvents;
+import ca.tristan.easycommands.events.OnSelfGuildJoin;
 import ca.tristan.easycommands.guild.ECGuild;
 import ca.tristan.easycommands.utils.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -36,7 +39,7 @@ public class EasyCommands {
     public static File savedDir;
     public static File configDir;
 
-    public JDA jda;
+    public static JDA jda;
     private final JDABuilder jdaBuilder;
 
     /**
@@ -54,8 +57,6 @@ public class EasyCommands {
 
     private PrefixCommands prefixCommands;
     private final SlashCommands slashCommands;
-
-    private final Map<Guild, Channel> guildsMusicChannel = new HashMap<>();
 
     private Long millisStart;
 
@@ -129,7 +130,7 @@ public class EasyCommands {
 
         long millisStart1 = System.currentTimeMillis();
 
-        this.jda = jdaBuilder.build().awaitReady();
+        jda = jdaBuilder.build().awaitReady();
 
         millisStart = System.currentTimeMillis();
 
@@ -152,25 +153,33 @@ public class EasyCommands {
         }
 
         if(configFile.getUsePrefixCommands()) {
-            this.jda.addEventListener(prefixCommands);
+            jda.addEventListener(prefixCommands);
         }
 
-        this.jda.addEventListener(new AutoRoleEvents());
+        jda.addEventListener(new AutoRoleEvents(), new OnSelfGuildJoin());
+        addExecutor(new SetAutoMemberRole(), new SetAutoBotRole(), new SetLogChannel());
         updateCommands();
         logCurrentExecutors();
 
         /*
          * Loads the properties for each guild. (Log channel id, auto roles, etc.)
          */
+        loadGuildProperties();
+
+        Logger.log(LogType.OK, "EasyCommands finished loading in " + ConsoleColors.GREEN_BOLD + (System.currentTimeMillis() - millisStart) + "ms" + ConsoleColors.GREEN + "\nTotal: " + ConsoleColors.GREEN_BOLD + (System.currentTimeMillis() - millisStart1) + "ms" + ConsoleColors.GREEN + ".");
+        return jda;
+    }
+
+    /**
+     * Do not call this function manually unless you know what you are doing.
+     */
+    public static void loadGuildProperties() {
         ecGuilds = new ECGuild[jda.getGuilds().size()];
         for (int index = 0; index < jda.getGuilds().size(); index++) {
             Guild jdaGuild = jda.getGuilds().get(index);
             ECGuild guild = new ECGuild(jdaGuild.getId());
             ecGuilds[index] = guild;
         }
-
-        Logger.log(LogType.OK, "EasyCommands finished loading in " + ConsoleColors.GREEN_BOLD + (System.currentTimeMillis() - millisStart) + "ms" + ConsoleColors.GREEN + "\nTotal: " + ConsoleColors.GREEN_BOLD + (System.currentTimeMillis() - millisStart1) + "ms" + ConsoleColors.GREEN + ".");
-        return jda;
     }
 
     private void loadIntents() {
@@ -329,7 +338,7 @@ public class EasyCommands {
 
     private void enableMusicBot() {
         this.addExecutor(new PlayCmd(this), new StopCmd(this), new NowPlayingCmd(this), new SkipCmd(this), new PauseCmd(this), new LyricsCmd(this), new SetMusicChannel());
-        this.jda.addEventListener(new AutoDisconnectEvent(), new ButtonEvents());
+        jda.addEventListener(new AutoDisconnectEvent(), new ButtonEvents());
         Logger.log(LogType.OK, "EasyCommands MusicBot has been enabled successfully.");
     }
 

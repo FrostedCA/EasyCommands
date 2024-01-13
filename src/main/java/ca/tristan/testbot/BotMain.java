@@ -31,10 +31,7 @@ public class BotMain {
         ).addExecutor(
                 new HelpCmd(easyCommands),
                 new ReloadConfigCmd(easyCommands),
-                new ExampleCommand(),
-                new SetAutoMemberRole(),
-                new SetAutoBotRole(),
-                new SetLogChannel()
+                new ExampleCommand()
         ).addEnabledCacheFlags().addGatewayIntents().buildJDA();
     }
 

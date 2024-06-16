@@ -8,6 +8,7 @@
 # EasyCommands (JDA Slash & Prefix Command handler)
 Public library to make slash & prefix commands creation for JDA API easier.
 #### *Contains a Music Bot*
+### *The music bot might not be working. This libary is not updated anymore. This might be a problem with Lavaplayer.*
 #### Join the [Discord](https://discord.com/invite/2rfSEGNgrv) server for support.
 ### If you want to bring any changes to the library you can create a fork of this branch, contact me on Discord, give good explanation of your changes and they might get added to this official branch.
 
